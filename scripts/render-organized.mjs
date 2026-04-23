@@ -36,18 +36,28 @@ if (!videoNameMatch || !videoNameMatch[1]) {
 const videoName = videoNameMatch[1];
 console.log(`\n🎬 開始渲染: ${videoName}\n`);
 
+// Remotion 4.x 的 render / still 指令用 positional args：
+//   npx remotion render <composition-id> <output-path>
+//   npx remotion still  <composition-id> <output-path>
+// 不要用 -o 旗標，那個在這版會被當字串吃進去但不生效。
+function runRemotion(subcommand, compositionId, outputPath) {
+  return spawnSync(
+    'npx',
+    ['remotion', subcommand, compositionId, outputPath],
+    { cwd: projectRoot, stdio: 'inherit' },
+  );
+}
+
 try {
   // 渲染影片
   console.log('📹 渲染影片...');
-  const renderResult = spawnSync('bash', ['-c', `echo "\\n" | npx remotion render --composition "${videoName}" -o output/videos/${videoName}.mp4`], {
-    cwd: projectRoot,
-    stdio: 'inherit'
-  });
+  const videoOut = `output/videos/${videoName}.mp4`;
+  const renderResult = runRemotion('render', videoName, videoOut);
 
   if (renderResult.status === 0) {
-    console.log(`✅ 影片完成: output/videos/${videoName}.mp4\n`);
+    console.log(`✅ 影片完成: ${videoOut}\n`);
   } else {
-    console.log(`⚠️ 影片渲染可能有問題\n`);
+    console.log(`⚠️ 影片渲染可能有問題 (exit ${renderResult.status})\n`);
   }
 
   // 渲染縮圖
@@ -58,18 +68,14 @@ try {
   ];
 
   for (const thumb of thumbFormats) {
-    try {
-      console.log(`🖼️  渲染 ${thumb.label} 縮圖...`);
-      const stillResult = spawnSync('bash', ['-c', `echo "\\n" | npx remotion still --composition "${thumb.id}" -o output/thumbnails/${thumb.dir}/${videoName}.png`], {
-        cwd: projectRoot,
-        stdio: 'inherit'
-      });
+    console.log(`🖼️  渲染 ${thumb.label} 縮圖...`);
+    const stillOut = `output/thumbnails/${thumb.dir}/${videoName}.png`;
+    const stillResult = runRemotion('still', thumb.id, stillOut);
 
-      if (stillResult.status === 0) {
-        console.log(`✅ 縮圖完成: output/thumbnails/${thumb.dir}/${videoName}.png\n`);
-      }
-    } catch (e) {
-      console.log(`⊘ 跳過 ${thumb.label}\n`);
+    if (stillResult.status === 0) {
+      console.log(`✅ 縮圖完成: ${stillOut}\n`);
+    } else {
+      console.log(`⚠️ ${thumb.label} 縮圖渲染有問題 (exit ${stillResult.status})\n`);
     }
   }
 
