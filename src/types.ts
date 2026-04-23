@@ -1,0 +1,123 @@
+// ============================================================
+// VideoContent — single source of truth for the whole video.
+// Everything Claude Code (or you) touches to change content
+// lives in src/content.ts (which imports these types).
+//
+// 所有影片內容的唯一來源。任何要修改的文案、場景、配音、
+// BGM、縮圖設定，全部寫在 src/content.ts。
+// ============================================================
+
+export type IconName =
+  | "claudeCode"
+  | "remotion"
+  | "editor"
+  | "code"
+  | "animation"
+  | "voice"
+  | "phone"
+  | "terminal"
+  | "rocket"
+  | "spark"
+  | "chat";
+
+export type IconRef =
+  | { kind: "builtin"; name: IconName; label?: string }
+  | { kind: "emoji"; char: string; label?: string };
+
+// Title / description support [bracket] syntax for accent color.
+//   "用 [Claude Code] 做影片" → "Claude Code" 會被上重點色
+//   "Made with [Claude] + [Remotion]" — same idea
+// Use \n for line breaks.
+export type RichText = string;
+
+// ----- Scene visual templates ----------------------------------
+// Each scene picks one visual template and provides its data.
+// Want a new template? Add a variant here, then handle it in
+// SceneRenderer.tsx.
+
+export type SceneVisual =
+  | { type: "centerText" } // no visual, title + description only
+  | {
+      type: "iconPair";
+      left: IconRef;
+      right: IconRef;
+      connector?: "+" | "→" | "&";
+    }
+  | {
+      type: "crossedItems";
+      left: IconRef;
+      right: IconRef;
+    }
+  | {
+      type: "terminal";
+      appName?: string; // titlebar text, e.g. "claude code"
+      lines: { text: string; accent?: boolean }[];
+    }
+  | {
+      type: "phoneCTA";
+      senderName: string;
+      senderInitial: string; // single letter shown in avatar circle
+      messagePreview: string;
+      ctaText: string; // big red button label
+    };
+
+export type SceneConfig = {
+  id: string; // used for voiceover file naming, must be unique
+  title: RichText;
+  visual: SceneVisual;
+  description?: RichText;
+  voiceover?: string; // text passed to TTS; omit to skip this scene
+  durationSeconds?: number; // used when voiceover.enabled is false
+};
+
+// ----- Thumbnails ----------------------------------------------
+
+export type ThumbnailFormat = "yt" | "ig" | "reel";
+
+export type ThumbnailContent = {
+  // Title rendered as 3 lines: prefix + accentBox + suffix.
+  // e.g. ["用", "Claude Code", "做影片"] →
+  //   "用" / [red box: Claude Code] / "做影片"
+  titleParts: [string, string, string];
+  features: string[]; // chip labels in the middle
+  tagline: RichText; // bottom punchline, supports [brackets]
+  brand: string; // tiny brand text at the very bottom
+};
+
+// ----- Top-level config ----------------------------------------
+
+export type VideoContent = {
+  meta: {
+    videoName: string; // 影片名稱 — 用來自動識別和命名檔案
+    width: number;
+    height: number;
+    fps: number;
+    sceneTailSeconds: number; // silence after each voiceover
+    fallbackSceneSeconds: number; // duration when voiceover disabled
+  };
+  brand: {
+    name: string; // bottom-right of every scene, e.g. "ALEX"
+    subtitle?: string; // appears next to brand name
+    primaryColor: string; // accent color used everywhere (hex)
+  };
+  scenes: SceneConfig[]; // any number of scenes
+  voiceover: {
+    enabled: boolean;
+    voice?: string; // Gemini TTS voice (e.g. "Puck", "Kore")
+    model?: string; // default: gemini-2.5-flash-preview-tts
+    promptPrefix?: string; // prepended to each line, useful for forcing language
+  };
+  bgm: {
+    enabled: boolean;
+    file?: string; // path under public/, e.g. "music/bgm.mp3"
+    volume?: number; // 0..1, default 0.55
+    fadeInFrames?: number;
+    fadeOutFrames?: number;
+    attribution?: string; // CC BY etc., for your video description
+  };
+  thumbnails: {
+    yt?: ThumbnailContent;
+    ig?: ThumbnailContent;
+    reel?: ThumbnailContent;
+  };
+};
