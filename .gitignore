@@ -36,3 +36,18 @@ public/voiceover-archive/
 # Third-party background music (CC BY etc., download yourself)
 public/music/*.mp3
 !public/music/.gitkeep
+
+# Isolated dev worktrees created by superpowers skills
+.worktrees/
+
+# Internal AI workflow artifacts — 不屬於專案交付物
+docs/superpowers/
+
+# Scraped tutorial assets (regenerable via `npm run capture:tutorial`)
+# 結構保留,產物不追蹤 —— 圖片和爬蟲 raw dump 都可重跑
+public/screenshots/**/*.png
+public/screenshots/**/*.gif
+public/screenshots/**/*.webp
+public/screenshots/**/*.jpg
+public/screenshots/**/steps.raw.json
+!public/screenshots/**/.gitkeep
