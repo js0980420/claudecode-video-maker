@@ -16,14 +16,8 @@ input/**/*
 !input/USAGE.md
 
 # Output assets folder (資料夾結構追蹤、渲染檔不上傳)
-output/**/*
-!output/
-!output/videos/
-!output/thumbnails/
-!output/thumbnails/yt/
-!output/thumbnails/ig/
-!output/thumbnails/reel/
-!output/**/.gitkeep
+output/*
+!output/.gitkeep
 
 # Your private content (created from src/content.example.ts on install)
 src/content.ts

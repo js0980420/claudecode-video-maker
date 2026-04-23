@@ -29,7 +29,7 @@
     "build": "remotion bundle",
     "render": "npm run render:main",
     "render:main": "node scripts/render-organized.mjs content.ts",
-    "render:test": "npx remotion render --entry-point src/Root-test.tsx -o output/videos/測試影片.mp4 && npx remotion still --entry-point src/Root-test.tsx -o output/thumbnails/yt/測試影片.png && npx remotion still --entry-point src/Root-test.tsx -o output/thumbnails/ig/測試影片.png && npx remotion still --entry-point src/Root-test.tsx -o output/thumbnails/reel/測試影片.png",
+    "render:test": "npx remotion render --entry-point src/Root-test.tsx -o output/測試影片.mp4 && npx remotion still --entry-point src/Root-test.tsx -o output/測試影片-yt.png && npx remotion still --entry-point src/Root-test.tsx -o output/測試影片-ig.png && npx remotion still --entry-point src/Root-test.tsx -o output/測試影片-reel.png",
     "render:studio": "remotion studio",
     "voiceover": "tsx scripts/generate-voiceover.ts",
     "archive": "node scripts/archive.mjs",

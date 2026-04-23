@@ -127,7 +127,7 @@ Free sources: [Kevin MacLeod / incompetech.com](https://incompetech.com/), [YouT
 
 ## Render
 
-One command outputs the video plus three thumbnail formats, all named after `meta.videoName` and sorted into `output/`:
+One command outputs the video plus three thumbnail formats, all named after `meta.videoName` with a purpose suffix, dropped directly into `output/`:
 
 ```bash
 npm run render
@@ -137,12 +137,10 @@ Output layout:
 
 ```
 output/
-  videos/
-    <videoName>.mp4              # main video
-  thumbnails/
-    yt/<videoName>.png           # YouTube 16:9
-    ig/<videoName>.png           # Instagram 1:1
-    reel/<videoName>.png         # Reel 9:16
+  <videoName>.mp4        # main video
+  <videoName>-yt.png     # YouTube 16:9
+  <videoName>-ig.png     # Instagram 1:1
+  <videoName>-reel.png   # Reel 9:16
 ```
 
 > 💡 Changing `meta.videoName` effectively starts a new version — old files are never overwritten.
@@ -157,7 +155,7 @@ npm run render:studio  # call remotion render directly with your own flags
 Render a single thumbnail:
 
 ```bash
-npx remotion still ThumbnailYT output/thumbnails/yt/preview.png
+npx remotion still ThumbnailYT output/preview-yt.png
 ```
 
 ---
@@ -190,9 +188,8 @@ scripts/
   init-content.mjs       # postinstall: copy example → content.ts
 input/                   # your source assets (contents gitignored)
   images/  videos/  audio/
-output/                  # render output (contents gitignored, structure kept)
-  videos/
-  thumbnails/{yt,ig,reel}/
+output/                  # render output (contents gitignored, folder itself kept)
+                         # <videoName>.mp4 / <videoName>-yt.png / -ig.png / -reel.png
 public/
   voiceover/             # generated WAVs (gitignored)
   music/                 # your BGM files (gitignored)

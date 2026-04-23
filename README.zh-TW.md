@@ -127,7 +127,7 @@ bgm: {
 
 ## 渲染輸出
 
-一個指令同時輸出影片 + 三種縮圖,全部依 `meta.videoName` 命名、自動分類到 `output/`:
+一個指令同時輸出影片 + 三種縮圖,全部依 `meta.videoName` 命名,用尾綴區分用途,放在 `output/` 根目錄:
 
 ```bash
 npm run render
@@ -137,12 +137,10 @@ npm run render
 
 ```
 output/
-  videos/
-    <videoName>.mp4              # 主影片
-  thumbnails/
-    yt/<videoName>.png           # YouTube 16:9
-    ig/<videoName>.png           # Instagram 1:1
-    reel/<videoName>.png         # Reel 9:16
+  <videoName>.mp4        # 主影片
+  <videoName>-yt.png     # YouTube 16:9
+  <videoName>-ig.png     # Instagram 1:1
+  <videoName>-reel.png   # Reel 9:16
 ```
 
 > 💡 改 `meta.videoName` 等於開新影片版本 — 舊檔案不會被覆蓋。
@@ -157,7 +155,7 @@ npm run render:studio  # 直接呼叫 remotion render,自己帶參數
 也可以單獨輸出某張縮圖:
 
 ```bash
-npx remotion still ThumbnailYT output/thumbnails/yt/preview.png
+npx remotion still ThumbnailYT output/preview-yt.png
 ```
 
 ---
@@ -190,9 +188,8 @@ scripts/
   init-content.mjs       # postinstall:複製 example → content.ts
 input/                   # 你要用到的素材(內容 gitignored)
   images/  videos/  audio/
-output/                  # 渲染輸出(內容 gitignored,結構保留)
-  videos/
-  thumbnails/{yt,ig,reel}/
+output/                  # 渲染輸出(內容 gitignored,資料夾本身保留)
+                         # <videoName>.mp4 / <videoName>-yt.png / -ig.png / -reel.png
 public/
   voiceover/             # 生成的 WAV(gitignored)
   music/                 # 你的 BGM 檔案(gitignored)

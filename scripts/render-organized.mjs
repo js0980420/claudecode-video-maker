@@ -6,20 +6,11 @@ import { spawnSync } from 'child_process';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.join(__dirname, '..');
 
-// 確保輸出目錄結構存在
-const dirs = [
-  'output/videos',
-  'output/thumbnails/yt',
-  'output/thumbnails/ig',
-  'output/thumbnails/reel',
-];
-
-dirs.forEach(dir => {
-  const fullPath = path.join(projectRoot, dir);
-  if (!fs.existsSync(fullPath)) {
-    fs.mkdirSync(fullPath, { recursive: true });
-  }
-});
+// 確保輸出目錄存在（只有單一 composition，所以不分子資料夾）
+const outputDir = path.join(projectRoot, 'output');
+if (!fs.existsSync(outputDir)) {
+  fs.mkdirSync(outputDir, { recursive: true });
+}
 
 // 取得 content file (第一個參數，預設 content.ts)
 const contentFile = process.argv[2] || 'content.ts';
@@ -51,7 +42,7 @@ function runRemotion(subcommand, compositionId, outputPath) {
 try {
   // 渲染影片
   console.log('📹 渲染影片...');
-  const videoOut = `output/videos/${videoName}.mp4`;
+  const videoOut = `output/${videoName}.mp4`;
   const renderResult = runRemotion('render', videoName, videoOut);
 
   if (renderResult.status === 0) {
@@ -60,16 +51,16 @@ try {
     console.log(`⚠️ 影片渲染可能有問題 (exit ${renderResult.status})\n`);
   }
 
-  // 渲染縮圖
+  // 渲染縮圖（用檔名尾綴區分用途：-yt / -ig / -reel）
   const thumbFormats = [
-    { id: 'ThumbnailYT', dir: 'yt', label: 'YouTube' },
-    { id: 'ThumbnailIG', dir: 'ig', label: 'Instagram' },
-    { id: 'ThumbnailReel', dir: 'reel', label: 'Reel' },
+    { id: 'ThumbnailYT', suffix: 'yt', label: 'YouTube' },
+    { id: 'ThumbnailIG', suffix: 'ig', label: 'Instagram' },
+    { id: 'ThumbnailReel', suffix: 'reel', label: 'Reel' },
   ];
 
   for (const thumb of thumbFormats) {
     console.log(`🖼️  渲染 ${thumb.label} 縮圖...`);
-    const stillOut = `output/thumbnails/${thumb.dir}/${videoName}.png`;
+    const stillOut = `output/${videoName}-${thumb.suffix}.png`;
     const stillResult = runRemotion('still', thumb.id, stillOut);
 
     if (stillResult.status === 0) {
