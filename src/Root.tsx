@@ -7,6 +7,15 @@ import { ThumbnailYT } from "./thumbnails/ThumbnailYT";
 import { ThumbnailIG } from "./thumbnails/ThumbnailIG";
 import { ThumbnailReel } from "./thumbnails/ThumbnailReel";
 import durationsJson from "../public/voiceover/durations.json";
+import tutorialStepsJson from "../public/screenshots/tutorial-ch1/steps.json";
+import { parseTutorialData } from "./tutorial/steps-data";
+import {
+  TutorialComposition,
+  calcTutorialDurationFrames,
+  TUTORIAL_FPS,
+  TUTORIAL_WIDTH,
+  TUTORIAL_HEIGHT,
+} from "./tutorial/TutorialComposition";
 
 const durations = durationsJson as Record<string, number>;
 
@@ -39,6 +48,8 @@ const createComposition = (content: typeof mainContent) => {
 export const RemotionRoot: React.FC = () => {
   const main = createComposition(mainContent);
   const test = createComposition(testContent);
+  const tutorialData = parseTutorialData(tutorialStepsJson);
+  const tutorialDurationFrames = calcTutorialDurationFrames(tutorialData);
 
   return (
     <>
@@ -64,6 +75,17 @@ export const RemotionRoot: React.FC = () => {
         height={testContent.meta.height}
         defaultProps={{ sceneDurationsFrames: test.SCENE_DURATIONS_FRAMES }}
         calculateMetadata={test.calculateMetadata}
+      />
+
+      {/* Tutorial prototype(階段 1 — 純截圖輪播) */}
+      <Composition
+        id="TutorialCh1"
+        component={TutorialComposition}
+        durationInFrames={tutorialDurationFrames}
+        fps={TUTORIAL_FPS}
+        width={TUTORIAL_WIDTH}
+        height={TUTORIAL_HEIGHT}
+        defaultProps={{ data: tutorialData }}
       />
 
       {mainContent.thumbnails.yt ? (
