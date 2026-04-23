@@ -32,25 +32,32 @@ export const ThumbnailYT: React.FC<ThumbnailProps> = ({
           display: "flex",
           alignItems: "center",
           gap: 18,
-          fontSize: 88,
+          fontSize: 72,
           fontWeight: 900,
           letterSpacing: -1,
           lineHeight: 1,
+          flexWrap: "nowrap",
+          whiteSpace: "nowrap",
         }}
       >
-        {prefix ? <span>{prefix}</span> : null}
+        {prefix ? (
+          <span style={{ whiteSpace: "nowrap" }}>{prefix}</span>
+        ) : null}
         <span
           style={{
             background: primaryColor,
             color: WHITE,
-            padding: "10px 24px",
+            padding: "10px 22px",
             borderRadius: 12,
             letterSpacing: 0,
+            whiteSpace: "nowrap",
           }}
         >
           {accent}
         </span>
-        {suffix ? <span>{suffix}</span> : null}
+        {suffix ? (
+          <span style={{ whiteSpace: "nowrap" }}>{suffix}</span>
+        ) : null}
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: 32 }}>

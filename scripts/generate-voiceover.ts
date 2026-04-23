@@ -156,14 +156,16 @@ if (existsSync(durationsPath)) {
   durations = JSON.parse(readFileSync(durationsPath, "utf-8"));
 }
 
-for (const scene of toGenerate) {
-  const seconds = await generateForScene(scene);
-  durations[scene.id] = seconds;
-  // Avoid Gemini's 10 req/min rate limit
-  if (toGenerate.indexOf(scene) < toGenerate.length - 1) {
-    await new Promise((r) => setTimeout(r, 7000));
+void (async () => {
+  for (const scene of toGenerate) {
+    const seconds = await generateForScene(scene);
+    durations[scene.id] = seconds;
+    // Avoid Gemini's 10 req/min rate limit
+    if (toGenerate.indexOf(scene) < toGenerate.length - 1) {
+      await new Promise((r) => setTimeout(r, 7000));
+    }
   }
-}
 
-writeFileSync(durationsPath, JSON.stringify(durations, null, 2));
-console.log(`\n🎙️  Done — ${toGenerate.length} clip(s) written.`);
+  writeFileSync(durationsPath, JSON.stringify(durations, null, 2));
+  console.log(`\n🎙️  Done — ${toGenerate.length} clip(s) written.`);
+})();

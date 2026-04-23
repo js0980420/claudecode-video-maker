@@ -54,6 +54,17 @@ export type SceneVisual =
       lines: { text: string; accent?: boolean }[];
     }
   | {
+      type: "chatBox";
+      // 對話框視覺（類 Claude Code / ChatGPT 氣泡）。
+      // user 訊息右對齊、accent 可選為主色底；assistant 訊息左對齊白底。
+      appName?: string; // 對話框頂端的標籤，例如 "claude code"
+      messages: {
+        role: "user" | "assistant";
+        text: string;
+        accent?: boolean; // user 訊息才會吃 accent：true = 主色底，false/undefined = 黑底
+      }[];
+    }
+  | {
       type: "phoneCTA";
       senderName: string;
       senderInitial: string; // single letter shown in avatar circle

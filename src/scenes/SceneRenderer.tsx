@@ -12,6 +12,7 @@ import { BLACK } from "../constants";
 import { IconPair } from "./templates/IconPair";
 import { CrossedItems } from "./templates/CrossedItems";
 import { Terminal } from "./templates/Terminal";
+import { ChatBox } from "./templates/ChatBox";
 import { PhoneCTA } from "./templates/PhoneCTA";
 
 type Props = {
@@ -111,6 +112,8 @@ const VisualSlot: React.FC<{
       return <CrossedItems {...scene.visual} accentColor={accentColor} />;
     case "terminal":
       return <Terminal {...scene.visual} accentColor={accentColor} />;
+    case "chatBox":
+      return <ChatBox {...scene.visual} accentColor={accentColor} />;
     case "phoneCTA":
       return <PhoneCTA {...scene.visual} accentColor={accentColor} />;
   }
