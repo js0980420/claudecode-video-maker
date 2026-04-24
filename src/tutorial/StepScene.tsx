@@ -25,18 +25,11 @@ type Props = {
 };
 
 const FPS = 30;
-const OVERLAP_FRAMES = 9;
 const TAIL_FRAMES = 15; // 0.5s tail after audio to avoid cut-off
-
-export function blockDurationFrames(block: Block): number {
-  switch (block.type) {
-    case "paragraph": return 2.0 * FPS;
-    case "image":     return 3.0 * FPS;
-    case "code":      return 3.0 * FPS;
-    case "callout":   return 2.5 * FPS;
-    case "pageBreak": return 0;
-  }
-}
+const START_OFFSET_FRAMES = 5; // 0.17s — 標題出現後第一個 block 立刻出現
+const STAGGER_FRAMES = 10; // 0.33s — 相鄰 block 的起始間隔(快節奏,跟音訊搭)
+const FADE_IN_FRAMES = 8; // 0.27s — block 淡入過渡
+const PAGE_TAIL_FRAMES = 15; // 0.5s — 最後一個 block 顯示完之後停留秒數
 
 export function splitIntoPages(blocks: Block[]): Block[][] {
   const pages: Block[][] = [[]];
@@ -55,12 +48,12 @@ export function pageDurationFrames(
   pageBlocks: Block[],
   audioDurationSec?: number | null,
 ): number {
-  let total = 0;
-  pageBlocks.forEach((b, i) => {
-    const d = blockDurationFrames(b);
-    total += d - (i === 0 ? 0 : OVERLAP_FRAMES);
-  });
-  total += FPS; // 1 秒 tail
+  // natural = 所有 block 依序淡入所需時間 + tail
+  const revealFrames =
+    START_OFFSET_FRAMES +
+    Math.max(0, pageBlocks.length - 1) * STAGGER_FRAMES +
+    FADE_IN_FRAMES;
+  let total = revealFrames + PAGE_TAIL_FRAMES;
   if (audioDurationSec && audioDurationSec > 0) {
     const audioFrames = Math.ceil(audioDurationSec * FPS) + TAIL_FRAMES;
     total = Math.max(total, audioFrames);
@@ -162,13 +155,9 @@ const PageContent: React.FC<{
     config: { damping: 14, mass: 0.6 },
   });
 
-  let cursor = FPS * 0.5;
-  const blockTimings = blocks.map((b, i) => {
-    const from = cursor - (i === 0 ? 0 : OVERLAP_FRAMES);
-    const duration = blockDurationFrames(b);
-    cursor = from + duration;
-    return { from, duration };
-  });
+  const blockTimings = blocks.map((_, i) => ({
+    from: START_OFFSET_FRAMES + i * STAGGER_FRAMES,
+  }));
 
   return (
     <div
@@ -208,13 +197,13 @@ const PageContent: React.FC<{
         const { from } = blockTimings[i];
         const opacity = interpolate(
           frame,
-          [from, from + 12],
+          [from, from + FADE_IN_FRAMES],
           [0, 1],
           { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
         );
         const translateY = interpolate(
           frame,
-          [from, from + 12],
+          [from, from + FADE_IN_FRAMES],
           [16, 0],
           { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
         );
