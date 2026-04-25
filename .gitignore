@@ -25,6 +25,9 @@ src/content.ts
 # Personal tutorial config (brand, titles, colors) — private per user
 src/tutorial/config.ts
 
+# Per-video content shim (statically imports steps.json + durations.json)
+src/tutorial/content.ts
+
 # Archived video contents (private backups — run `npm run archive` 前的舊版)
 src/videos-archive/
 

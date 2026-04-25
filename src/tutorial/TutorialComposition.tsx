@@ -4,14 +4,13 @@ import { TutorialData, TutorialStep } from "./types";
 import { StepScene, stepDurationFrames, splitIntoPages } from "./StepScene";
 import { IntroScene, INTRO_DURATION_FRAMES } from "./IntroScene";
 import { TUTORIAL_CONFIG } from "./config";
+import { TUTORIAL_DURATIONS } from "./content";
 import { WHITE } from "../constants";
-import tutorialDurations from "../../public/voiceover/tutorial-ch1/durations.json";
 
 const FPS = 30;
 const ACCENT_COLOR = TUTORIAL_CONFIG.accentColor;
+const VIDEO_NAME = TUTORIAL_CONFIG.videoName;
 const TAIL_FRAMES = 15; // 0.5s 尾巴,避免音訊還沒講完就切場
-
-const TUTORIAL_DURATIONS = tutorialDurations as Record<string, number>;
 
 function introDurationFrames(): number {
   const audioSec = TUTORIAL_DURATIONS.intro ?? 0;
@@ -57,7 +56,7 @@ export const TutorialComposition: React.FC<TutorialCompositionProps> = ({
           platform={TUTORIAL_CONFIG.intro.platform}
         />
         {data.intro?.voiceover ? (
-          <Audio src={staticFile("voiceover/tutorial-ch1/intro.wav")} />
+          <Audio src={staticFile(`voiceover/${VIDEO_NAME}/intro.wav`)} />
         ) : null}
       </Sequence>
       {data.steps.map((step) => {
@@ -75,6 +74,7 @@ export const TutorialComposition: React.FC<TutorialCompositionProps> = ({
               accentColor={ACCENT_COLOR}
               pageAudioDurations={pageAudioDurationsFor(step)}
               watermark={TUTORIAL_CONFIG.watermark}
+              videoName={VIDEO_NAME}
             />
           </Sequence>
         );

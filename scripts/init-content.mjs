@@ -30,6 +30,18 @@ if (!existsSync(tutorialConfigTarget)) {
   }
 }
 
+const tutorialContentTarget = join(root, "src", "tutorial", "content.ts");
+const tutorialContentExample = join(root, "src", "tutorial", "content.example.ts");
+
+if (!existsSync(tutorialContentTarget)) {
+  if (existsSync(tutorialContentExample)) {
+    copyFileSync(tutorialContentExample, tutorialContentTarget);
+    console.log("✓ Created src/tutorial/content.ts from content.example.ts");
+  } else {
+    console.warn("⚠ src/tutorial/content.example.ts missing — skipping tutorial content init");
+  }
+}
+
 const durationsPath = join(root, "public", "voiceover", "durations.json");
 if (!existsSync(durationsPath)) {
   mkdirSync(join(root, "public", "voiceover"), { recursive: true });

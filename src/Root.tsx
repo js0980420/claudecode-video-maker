@@ -7,7 +7,7 @@ import { ThumbnailYT } from "./thumbnails/ThumbnailYT";
 import { ThumbnailIG } from "./thumbnails/ThumbnailIG";
 import { ThumbnailReel } from "./thumbnails/ThumbnailReel";
 import durationsJson from "../public/voiceover/durations.json";
-import tutorialStepsJson from "../public/screenshots/tutorial-ch1/steps.json";
+import { TUTORIAL_STEPS_JSON } from "./tutorial/content";
 import { parseTutorialData } from "./tutorial/steps-data";
 import {
   TutorialComposition,
@@ -54,8 +54,9 @@ const createComposition = (content: typeof mainContent) => {
 export const RemotionRoot: React.FC = () => {
   const main = createComposition(mainContent);
   const test = createComposition(testContent);
-  const tutorialData = parseTutorialData(tutorialStepsJson);
+  const tutorialData = parseTutorialData(TUTORIAL_STEPS_JSON);
   const tutorialDurationFrames = calcTutorialDurationFrames(tutorialData);
+  const tutorialId = TUTORIAL_CONFIG.videoName; // Remotion composition id
 
   return (
     <>
@@ -85,7 +86,7 @@ export const RemotionRoot: React.FC = () => {
 
       {/* Tutorial prototype(階段 1 — 純截圖輪播) */}
       <Composition
-        id="TutorialCh1"
+        id={tutorialId}
         component={TutorialComposition}
         durationInFrames={tutorialDurationFrames}
         fps={TUTORIAL_FPS}
@@ -133,7 +134,7 @@ export const RemotionRoot: React.FC = () => {
 
       {/* Tutorial thumbnails (平台膠囊由 config.thumbnail.platformBadge 決定) */}
       <Still
-        id="TutorialCh1ThumbnailYT"
+        id={`${tutorialId}-ThumbnailYT`}
         component={TutorialThumbnailYT}
         width={1280}
         height={720}
@@ -144,7 +145,7 @@ export const RemotionRoot: React.FC = () => {
         }}
       />
       <Still
-        id="TutorialCh1ThumbnailIG"
+        id={`${tutorialId}-ThumbnailIG`}
         component={TutorialThumbnailIG}
         width={1080}
         height={1080}
@@ -155,7 +156,7 @@ export const RemotionRoot: React.FC = () => {
         }}
       />
       <Still
-        id="TutorialCh1ThumbnailReel"
+        id={`${tutorialId}-ThumbnailReel`}
         component={TutorialThumbnailReel}
         width={1080}
         height={1920}

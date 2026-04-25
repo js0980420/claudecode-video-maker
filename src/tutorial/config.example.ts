@@ -10,6 +10,9 @@ import type { TutorialConfig } from "./types";
 // import watermarkImg from "../../input/images/your-logo.png";
 
 export const TUTORIAL_CONFIG: TutorialConfig = {
+  // 對應 public/screenshots/<videoName>/ 與 public/voiceover/<videoName>/ 的資料夾名。
+  // 例:"tutorial-ch2"。共用元件靠這個 derive intro/step 音訊路徑與 composition id。
+  videoName: "your-video-name",
   accentColor: "#E63946",
   intro: {
     titleAccent: "Your Topic",

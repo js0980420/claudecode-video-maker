@@ -72,6 +72,10 @@ export type Watermark = {
  * src/tutorial/config.example.ts is the template other devs see.
  */
 export type TutorialConfig = {
+  // 對應 public/screenshots/<videoName>/ 與 public/voiceover/<videoName>/ 的資料夾名,
+  // 共用元件靠這個 derive intro/step 音訊路徑與 Remotion composition id。
+  // 各 video worktree 必填,例:"tutorial-ch1" / "tutorial-ch2"。
+  videoName: string;
   accentColor: string; // hex, e.g. "#E63946"
   intro: {
     titleAccent: string; // e.g. "Claude Code"

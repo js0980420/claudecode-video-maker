@@ -22,6 +22,7 @@ type Props = {
   accentColor: string;
   pageAudioDurations?: (number | null | undefined)[]; // seconds per page, or null/undefined
   watermark?: Watermark; // 右下角浮水印(預設 bottomRight);省略則不顯示
+  videoName: string; // 用來組音訊檔路徑:voiceover/<videoName>/<step.id>-pN.wav
 };
 
 const FPS = 30;
@@ -77,6 +78,7 @@ export const StepScene: React.FC<Props> = ({
   accentColor,
   pageAudioDurations,
   watermark,
+  videoName,
 }) => {
   const pages = splitIntoPages(step.blocks);
   let cursor = 0;
@@ -88,7 +90,7 @@ export const StepScene: React.FC<Props> = ({
         const from = cursor;
         cursor += dur;
         const audioSrc = step.voiceovers?.[i]
-          ? staticFile(`voiceover/tutorial-ch1/${step.id}-p${i + 1}.wav`)
+          ? staticFile(`voiceover/${videoName}/${step.id}-p${i + 1}.wav`)
           : null;
         return (
           <Sequence key={i} from={from} durationInFrames={dur}>
