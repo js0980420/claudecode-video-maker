@@ -5,9 +5,11 @@ import type { TutorialConfig } from "./types";
  * `config.ts` is gitignored so your personal branding stays local.
  * (postinstall 會自動 copy 一份,除非已存在)
  *
- * 浮水印:把圖片丟進 input/images/,取消下面兩行註解並改 import 路徑。
+ * 浮水印預設用 src/tutorial/assets/zeabur.png(系列 brand,tracked 在 main)。
+ * 換別的浮水印:把圖檔丟進 src/tutorial/assets/ 然後改下面 import 路徑;
+ * 不要浮水印就把 watermark 行刪掉或註解掉。
  */
-// import watermarkImg from "../../input/images/your-logo.png";
+import watermarkImg from "./assets/zeabur.png";
 
 export const TUTORIAL_CONFIG: TutorialConfig = {
   // 對應 public/screenshots/<videoName>/ 與 public/voiceover/<videoName>/ 的資料夾名。
@@ -19,7 +21,7 @@ export const TUTORIAL_CONFIG: TutorialConfig = {
     titleSuffix: "Tutorial",
     platform: { icon: "apple", label: "Mac" },
   },
-  // watermark: { src: watermarkImg, size: 80 },  // optional 右下角浮水印
+  watermark: { src: watermarkImg, size: 80 }, // 右下角浮水印,不要時刪掉這行
   thumbnail: {
     content: {
       titleParts: ["Audience", "Your Topic", "Value Prop"],
