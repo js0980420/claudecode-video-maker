@@ -5,7 +5,13 @@
  * YOUTUBE_REFRESH_TOKEN。之後 publish-youtube.mjs 就直接用 refresh_token
  * 換 access_token,不用再跑這支。
  *
- * Testing mode 下 refresh_token 7 天會失效,過期重跑這支即可。
+ * ⚠️ Testing mode 下 refresh_token 7 天會失效。
+ *    重要:用 refresh_token 換 access_token *不會延長* refresh_token 自身
+ *    的 7 天倒數,所以 cron 自動 refresh **沒用** —— 拿到新 refresh_token
+ *    只能重做整套 OAuth(瀏覽器點同意),不能純 headless。
+ *    日更族最實際的解:每週手動跑一次本支(30 秒)。
+ *    要永久不死 → Google verification(送審 4~6 週),或 Workspace + Internal
+ *    app type。
  *
  * 用法:
  *   node scripts/youtube-oauth.mjs
