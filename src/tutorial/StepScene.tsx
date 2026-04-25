@@ -30,7 +30,7 @@ const TAIL_FRAMES = 15; // 0.5s tail after audio to avoid cut-off
 const START_OFFSET_FRAMES = 5; // 0.17s — 標題出現後第一個 block 立刻出現
 const STAGGER_FRAMES = 10; // 0.33s — 相鄰 block 的起始間隔(快節奏,跟音訊搭)
 const FADE_IN_FRAMES = 8; // 0.27s — block 淡入過渡
-const HEAD_DELAY_FRAMES = 30; // 1s — 換頁時先讓 title 站定再開始 reveal + audio,避免太衝
+const HEAD_DELAY_FRAMES = 15; // 0.5s — 換頁時先讓 title 站定再開始 reveal + audio,避免太衝
 const PAGE_TAIL_FRAMES = 30; // 1s — 最後一個 block 顯示完之後讓觀眾看一下
 
 export function splitIntoPages(blocks: Block[]): Block[][] {
