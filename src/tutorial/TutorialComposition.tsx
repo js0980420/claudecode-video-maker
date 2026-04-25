@@ -3,6 +3,7 @@ import { AbsoluteFill, Audio, Sequence, staticFile } from "remotion";
 import { TutorialData, TutorialStep } from "./types";
 import { StepScene, stepDurationFrames, splitIntoPages } from "./StepScene";
 import { IntroScene, INTRO_DURATION_FRAMES } from "./IntroScene";
+import { OutroScene, OUTRO_DURATION_FRAMES } from "./OutroScene";
 import { TUTORIAL_CONFIG } from "./config";
 import { TUTORIAL_DURATIONS } from "./content";
 import { WHITE } from "../constants";
@@ -16,6 +17,12 @@ function introDurationFrames(): number {
   const audioSec = TUTORIAL_DURATIONS.intro ?? 0;
   const audioFrames = Math.ceil(audioSec * FPS) + TAIL_FRAMES;
   return Math.max(INTRO_DURATION_FRAMES, audioFrames);
+}
+
+function outroDurationFrames(): number {
+  const audioSec = TUTORIAL_DURATIONS.outro ?? 0;
+  const audioFrames = Math.ceil(audioSec * FPS) + TAIL_FRAMES;
+  return Math.max(OUTRO_DURATION_FRAMES, audioFrames);
 }
 
 function pageAudioDurationsFor(step: TutorialStep): (number | null)[] {
@@ -80,15 +87,36 @@ export const TutorialComposition: React.FC<TutorialCompositionProps> = ({
           </Sequence>
         );
       })}
+      {/* Outro Sequence — config.outro 有設才接 */}
+      {TUTORIAL_CONFIG.outro
+        ? (() => {
+            const outroDur = outroDurationFrames();
+            return (
+              <Sequence from={cursor} durationInFrames={outroDur}>
+                <OutroScene
+                  accentColor={ACCENT_COLOR}
+                  title={TUTORIAL_CONFIG.outro.title}
+                  subtitle={TUTORIAL_CONFIG.outro.subtitle}
+                  nextChapter={TUTORIAL_CONFIG.outro.nextChapter}
+                  durationFrames={outroDur}
+                />
+                {data.outro?.voiceover ? (
+                  <Audio
+                    src={staticFile(`voiceover/${VIDEO_NAME}/outro.wav`)}
+                  />
+                ) : null}
+              </Sequence>
+            );
+          })()
+        : null}
     </AbsoluteFill>
   );
 };
 
 export function calcTutorialDurationFrames(data: TutorialData): number {
-  return (
-    introDurationFrames() +
-    data.steps.reduce((sum, s) => sum + stepTotalFrames(s), 0)
-  );
+  const stepsDur = data.steps.reduce((sum, s) => sum + stepTotalFrames(s), 0);
+  const outroDur = TUTORIAL_CONFIG.outro ? outroDurationFrames() : 0;
+  return introDurationFrames() + stepsDur + outroDur;
 }
 
 export const TUTORIAL_FPS = FPS;

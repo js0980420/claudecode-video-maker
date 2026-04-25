@@ -42,6 +42,7 @@ export type TutorialData = {
   chapter: string;
   capturedAt: string;
   intro?: { voiceover?: string };
+  outro?: { voiceover?: string };
   steps: TutorialStep[];
 };
 
@@ -85,6 +86,13 @@ export type TutorialConfig = {
     titleAccent: string; // e.g. "Claude Code"
     titleSuffix: string; // e.g. "安裝教學" or "Tutorial"
     platform?: PlatformBadge; // optional pill below title
+  };
+  // 結尾場景(可選):放在最後一個 step 後面,跟 intro 對稱。
+  // 視覺由 OutroScene.tsx 決定;voiceover 跟 intro 一樣寫在 steps.json 的 outro.voiceover。
+  outro?: {
+    title: string; // 例:「恭喜!安裝完成」
+    subtitle?: string; // 例:「請看下一集」(可省)
+    nextChapter?: string; // 例:「開發工具安裝教學」(會被紅色 chip 包起來,可省)
   };
   watermark?: Watermark; // 每個 step scene 右下角的浮水印
   thumbnail: {

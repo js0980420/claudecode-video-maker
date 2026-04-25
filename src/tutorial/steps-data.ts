@@ -122,6 +122,16 @@ export function parseTutorialData(raw: unknown): TutorialData {
                 : undefined,
           }
         : undefined,
+    outro:
+      obj.outro && typeof obj.outro === "object"
+        ? {
+            voiceover:
+              typeof (obj.outro as Record<string, unknown>).voiceover ===
+              "string"
+                ? ((obj.outro as Record<string, unknown>).voiceover as string)
+                : undefined,
+          }
+        : undefined,
     steps: parsedSteps,
   };
 }

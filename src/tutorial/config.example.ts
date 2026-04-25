@@ -21,6 +21,13 @@ export const TUTORIAL_CONFIG: TutorialConfig = {
     titleSuffix: "Tutorial",
     platform: { icon: "apple", label: "Mac" },
   },
+  // 結尾場景(可選)。整個 outro 註解掉就不接結尾。
+  // voiceover 寫在 steps.json 的 outro.voiceover,跟 intro 對稱。
+  outro: {
+    title: "恭喜!安裝完成",
+    subtitle: "請看下一集",
+    nextChapter: "Next Chapter Title", // 紅色 chip 包住的下一集名稱
+  },
   watermark: { src: watermarkImg, size: 80 }, // 右下角浮水印,不要時刪掉這行
   thumbnail: {
     content: {
