@@ -82,8 +82,11 @@ for (const step of tutorialJson.steps ?? []) {
     });
   }
 }
+if (tutorialJson?.outro?.voiceover) {
+  clips.push({ id: "outro", text: tutorialJson.outro.voiceover });
+}
 if (clips.length === 0) {
-  console.error("❌ 沒有任何 voiceover 腳本 (intro 或 step.voiceovers 都沒填)");
+  console.error("❌ 沒有任何 voiceover 腳本 (intro / step.voiceovers / outro 都沒填)");
   process.exit(1);
 }
 
