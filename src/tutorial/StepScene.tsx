@@ -30,7 +30,8 @@ const TAIL_FRAMES = 15; // 0.5s tail after audio to avoid cut-off
 const START_OFFSET_FRAMES = 5; // 0.17s — 標題出現後第一個 block 立刻出現
 const STAGGER_FRAMES = 10; // 0.33s — 相鄰 block 的起始間隔(快節奏,跟音訊搭)
 const FADE_IN_FRAMES = 8; // 0.27s — block 淡入過渡
-const PAGE_TAIL_FRAMES = 15; // 0.5s — 最後一個 block 顯示完之後停留秒數
+const HEAD_DELAY_FRAMES = 30; // 1s — 換頁時先讓 title 站定再開始 reveal + audio,避免太衝
+const PAGE_TAIL_FRAMES = 30; // 1s — 最後一個 block 顯示完之後讓觀眾看一下
 
 export function splitIntoPages(blocks: Block[]): Block[][] {
   const pages: Block[][] = [[]];
@@ -49,14 +50,16 @@ export function pageDurationFrames(
   pageBlocks: Block[],
   audioDurationSec?: number | null,
 ): number {
-  // natural = 所有 block 依序淡入所需時間 + tail
+  // natural = HEAD_DELAY + 所有 block 依序淡入 + PAGE_TAIL
   const revealFrames =
+    HEAD_DELAY_FRAMES +
     START_OFFSET_FRAMES +
     Math.max(0, pageBlocks.length - 1) * STAGGER_FRAMES +
     FADE_IN_FRAMES;
   let total = revealFrames + PAGE_TAIL_FRAMES;
   if (audioDurationSec && audioDurationSec > 0) {
-    const audioFrames = Math.ceil(audioDurationSec * FPS) + TAIL_FRAMES;
+    const audioFrames =
+      HEAD_DELAY_FRAMES + Math.ceil(audioDurationSec * FPS) + TAIL_FRAMES;
     total = Math.max(total, audioFrames);
   }
   return total;
@@ -100,7 +103,11 @@ export const StepScene: React.FC<Props> = ({
               accentColor={accentColor}
               watermark={watermark}
             />
-            {audioSrc ? <Audio src={audioSrc} /> : null}
+            {audioSrc ? (
+              <Sequence from={HEAD_DELAY_FRAMES}>
+                <Audio src={audioSrc} />
+              </Sequence>
+            ) : null}
           </Sequence>
         );
       })}
@@ -157,8 +164,10 @@ const PageContent: React.FC<{
     config: { damping: 14, mass: 0.6 },
   });
 
+  // block 的 reveal 時機加上 HEAD_DELAY,跟音訊起點對齊。
+  // title 不延遲(spring 從 frame 0 跑),所以換頁時先看到標題定下來再 reveal blocks。
   const blockTimings = blocks.map((_, i) => ({
-    from: START_OFFSET_FRAMES + i * STAGGER_FRAMES,
+    from: HEAD_DELAY_FRAMES + START_OFFSET_FRAMES + i * STAGGER_FRAMES,
   }));
 
   return (

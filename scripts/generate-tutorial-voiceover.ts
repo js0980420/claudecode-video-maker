@@ -121,6 +121,9 @@ function makeElevenLabsProvider() {
   const model = process.env.ELEVENLABS_MODEL ?? "eleven_multilingual_v2";
   // PCM 取樣率:Starter / Creator 上限 24000;Pro 才解鎖 44100。
   const sampleRate = Number(process.env.ELEVENLABS_SAMPLE_RATE ?? 24000);
+  // 語速倍率:0.5 ~ 2.0,1.0 = 原速,< 1 變慢、> 1 變快。沒設就跟模型預設走。
+  const speedRaw = process.env.ELEVENLABS_SPEED;
+  const speed = speedRaw ? Number(speedRaw) : undefined;
 
   if (!apiKey) {
     console.error("❌ Missing ELEVENLABS_API_KEY in .env");
@@ -135,17 +138,21 @@ function makeElevenLabsProvider() {
   }
 
   return {
-    label: `ElevenLabs ${model} @ ${sampleRate}Hz, voice=${voiceId}`,
+    label: `ElevenLabs ${model} @ ${sampleRate}Hz, voice=${voiceId}${speed !== undefined ? `, speed=${speed}` : ""}`,
     delayMs: 0, // Creator 同時併發 5,順序 call 沒壓力
     async generate(clip: ClipToRender): Promise<AudioResult> {
       const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?output_format=pcm_${sampleRate}`;
+      const body: Record<string, unknown> = { text: clip.text, model_id: model };
+      if (speed !== undefined) {
+        body.voice_settings = { speed };
+      }
       const resp = await fetch(url, {
         method: "POST",
         headers: {
           "xi-api-key": apiKey,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ text: clip.text, model_id: model }),
+        body: JSON.stringify(body),
       });
       if (!resp.ok) {
         const errText = await resp.text();
