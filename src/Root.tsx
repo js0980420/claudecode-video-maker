@@ -8,7 +8,7 @@ import { ThumbnailIG } from "./thumbnails/ThumbnailIG";
 import { ThumbnailReel } from "./thumbnails/ThumbnailReel";
 import { BannerYT } from "./BannerYT";
 import { BannerFB } from "./BannerFB";
-import { BannerIG } from "./BannerIG";
+import { PostIG } from "./PostIG";
 import { BannerLI } from "./BannerLI";
 import durationsJson from "../public/voiceover/durations.json";
 import { TUTORIAL_STEPS_JSON } from "./tutorial/content";
@@ -174,10 +174,11 @@ export const RemotionRoot: React.FC = () => {
         }}
       />
 
-      {/* Instagram 4:5 貼文(1080x1350)— 沿用 FB 內容,portrait 排版 */}
+      {/* Instagram 4:5 動態貼文(1080x1350)— feed post 用,不是 profile 橫幅。
+          tagline 不寫「點圖片看連結」之類 CTA(IG feed post 不能點擊跳連結) */}
       <Still
-        id="BannerIG"
-        component={BannerIG}
+        id="PostIG"
+        component={PostIG}
         width={1080}
         height={1350}
         defaultProps={{
@@ -188,7 +189,6 @@ export const RemotionRoot: React.FC = () => {
           footerLine: "日更發片神器",
           tagline: [
             "把工具連結丟給 Claude Code 安裝,再告訴它影片需求就可以了,所有功能全靠對話完成",
-            "就是這麼簡單無腦,點這張圖查看工具連結 ☝️",
           ],
           primaryColor: TUTORIAL_CONFIG.accentColor,
         }}

@@ -2,9 +2,11 @@ import React from "react";
 import { AbsoluteFill } from "remotion";
 import { FONT_FAMILY, WHITE } from "./constants";
 
-// Instagram 4:5 貼文(1080x1350)。沿用 BannerFB 的視覺語彙(紅斜帶 + 主標+chip + 副標 + footer 雙短條 + tagline),
+// Instagram 4:5 動態貼文(1080x1350)—— 用來發 feed post,不是 profile 橫幅。
+// 沿用 BannerFB 的視覺語彙(紅斜帶 + 主標+chip + 副標 + footer 雙短條 + tagline),
 // 改為 portrait 排版:headline 更大、tagline 留在底部、上下留白更寬。
-export type BannerIGProps = {
+// IG feed post 不能點擊跳連結,所以 tagline 不要寫「點這張圖看連結」這類 CTA。
+export type PostIGProps = {
   headlineLeft: string;
   headlineAccent: string;
   headlineRight: string;
@@ -20,7 +22,7 @@ const SUB_GRAY = "#C5C9D0";
 const CANVAS_W = 1080;
 const CANVAS_H = 1350;
 
-export const BannerIG: React.FC<BannerIGProps> = ({
+export const PostIG: React.FC<PostIGProps> = ({
   headlineLeft,
   headlineAccent,
   headlineRight,
