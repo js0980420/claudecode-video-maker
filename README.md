@@ -70,9 +70,11 @@ Want a new visual template? Add a variant to `SceneVisual` in `src/types.ts` and
 
 ---
 
-## Input assets (`input/`)
+## Input assets (`input/`) vs render assets (`public/`)
 
-Drop anything you want to use inside the video into the matching `input/` subfolder. Claude Code can read these paths and wire them into `content.ts`. The folder structure is tracked by git, but **file contents are gitignored** so your assets never leak.
+Drop raw material into the matching `input/` subfolder. Claude Code can inspect these files while preparing a video, but Remotion renders most runtime assets from `public/` via `staticFile()`. Treat `input/` as a private staging area and `public/` as the render-ready asset area.
+
+The folder structure is tracked by git, but **file contents are gitignored** so your assets never leak.
 
 ```
 input/
@@ -87,7 +89,16 @@ Example chats with Claude Code:
 >
 > "Use `input/audio/bgm.mp3` as the background music."
 
-> 💡 **BGM exception**: the background music track still lives at `public/music/bgm.mp3` so Remotion can read it via `staticFile()` during bundling. Use `input/audio/` for raw material — move the final track into `public/music/` before rendering.
+For the current templates, move or copy final render assets into `public/` before rendering:
+
+```
+public/
+  music/       # BGM files, e.g. music/bgm.mp3
+  voiceover/   # generated WAVs and durations.json
+  screenshots/ # tutorial screenshots and steps.json
+```
+
+> 💡 **BGM rule**: the background music track lives at `public/music/bgm.mp3` so Remotion can read it via `staticFile()` during bundling. Use `input/audio/` for raw material — move the final track into `public/music/` before rendering.
 
 ---
 

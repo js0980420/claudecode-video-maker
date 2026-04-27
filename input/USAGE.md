@@ -16,10 +16,10 @@
    "把 input/videos/intro.mp4 插入影片中"
    ```
 
-3. **Claude Code 會自動處理**
+3. **Claude Code 會協助處理**
    - 讀取素材檔案
-   - 整合到 content.ts
-   - 生成影片時自動引用
+   - 整理到 `content.ts` 或 tutorial 設定
+   - 需要 render 時，將最終素材放到 `public/` 下的穩定路徑
 
 ## 支援的格式
 
@@ -41,7 +41,7 @@
 
 ### 自訂背景音樂
 ```
-對話：「用 input/audio/my-music.mp3 當背景音樂」
+對話：「用 input/audio/my-music.mp3 當背景音樂，並整理成 public/music/bgm.mp3」
 ```
 
 ### 插入素材影片
