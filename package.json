@@ -36,6 +36,7 @@
     "capture:tutorial": "tsx scripts/capture-tutorial.ts",
     "voiceover:tutorial": "tsx scripts/generate-tutorial-voiceover.ts",
     "render:tutorial": "node scripts/render-tutorial.mjs",
+    "validate:bootstrap": "node scripts/validate-bootstrap.mjs",
     "publish:threads": "node scripts/publish-threads.mjs",
     "archive": "node scripts/archive.mjs",
     "upgrade": "remotion upgrade",
