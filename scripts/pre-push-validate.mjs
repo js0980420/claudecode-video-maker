@@ -15,6 +15,7 @@ const steps = [
     [
       "tsx",
       "--test",
+      "src/edit-plan/ruleBasedPlanner.test.ts",
       "src/edit-plan/validate.test.ts",
       "src/tutorial/steps-data.test.ts",
       "src/timeline/subtitles.test.ts",
