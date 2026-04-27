@@ -137,11 +137,22 @@ export type TimingMarker = {
 
 export type ThreeScenePrimitive = "box" | "sphere" | "torus";
 
+export type ThreeCameraAnimation =
+  | { type: "static" }
+  | { type: "dolly"; fromZ: number; toZ: number; durationFrames?: number }
+  | {
+      type: "orbit";
+      radius?: number;
+      height?: number;
+      speed?: number;
+    };
+
 export type ThreeSceneConfig = {
   primitive?: ThreeScenePrimitive;
   color?: string;
   rotationSpeed?: number;
   cameraZ?: number;
+  cameraAnimation?: ThreeCameraAnimation;
   modelAssetId?: string;
   textureAssetId?: string;
   modelScale?: number;

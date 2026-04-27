@@ -7,6 +7,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { CropPreset, ThreeSceneConfig, VideoContent } from "../../types";
 import { dimensionsForCropPreset } from "../../utils/cropPresets";
 import { findAsset } from "../../utils/assets";
+import { cameraPositionForFrame } from "../../utils/threeCamera";
 import { BLACK } from "../../constants";
 import { staticFile } from "remotion";
 
@@ -78,8 +79,14 @@ export const ThreeScene: React.FC<{
   cropPreset?: CropPreset;
   assets?: VideoContent["assets"];
 }> = ({ scene, cropPreset, assets }) => {
+  const frame = useCurrentFrame();
   const frameSize = dimensionsForCropPreset(MAX_WIDTH, MAX_HEIGHT, cropPreset);
   const cameraZ = scene?.cameraZ ?? 5;
+  const cameraPosition = cameraPositionForFrame(
+    scene?.cameraAnimation,
+    frame,
+    cameraZ,
+  );
   const modelAsset = scene?.modelAssetId
     ? findAsset(assets, scene.modelAssetId, "model3d")
     : null;
@@ -151,7 +158,7 @@ export const ThreeScene: React.FC<{
       <ThreeCanvas
         width={frameSize.width}
         height={frameSize.height}
-        camera={{ position: [0, 0, cameraZ], fov: 45 }}
+        camera={{ position: cameraPosition, fov: 45 }}
       >
         <ambientLight intensity={0.45} />
         <directionalLight position={[4, 5, 5]} intensity={1.1} />

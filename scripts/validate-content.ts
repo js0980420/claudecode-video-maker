@@ -463,6 +463,51 @@ function validateScene(scene: SceneConfig, index: number) {
         ) {
           fail(`${path}.visual.scene.cameraZ`, "must be > 0");
         }
+        if (scene.visual.scene.cameraAnimation) {
+          const animation = scene.visual.scene.cameraAnimation;
+          if (
+            animation.type !== "static" &&
+            animation.type !== "dolly" &&
+            animation.type !== "orbit"
+          ) {
+            fail(`${path}.visual.scene.cameraAnimation.type`, "must be static, dolly, or orbit");
+          }
+          if (animation.type === "dolly") {
+            if (!Number.isFinite(animation.fromZ) || animation.fromZ <= 0) {
+              fail(`${path}.visual.scene.cameraAnimation.fromZ`, "must be > 0");
+            }
+            if (!Number.isFinite(animation.toZ) || animation.toZ <= 0) {
+              fail(`${path}.visual.scene.cameraAnimation.toZ`, "must be > 0");
+            }
+            if (
+              animation.durationFrames !== undefined &&
+              (!Number.isFinite(animation.durationFrames) ||
+                animation.durationFrames <= 0)
+            ) {
+              fail(`${path}.visual.scene.cameraAnimation.durationFrames`, "must be > 0");
+            }
+          }
+          if (animation.type === "orbit") {
+            if (
+              animation.radius !== undefined &&
+              (!Number.isFinite(animation.radius) || animation.radius <= 0)
+            ) {
+              fail(`${path}.visual.scene.cameraAnimation.radius`, "must be > 0");
+            }
+            if (
+              animation.height !== undefined &&
+              !Number.isFinite(animation.height)
+            ) {
+              fail(`${path}.visual.scene.cameraAnimation.height`, "must be finite");
+            }
+            if (
+              animation.speed !== undefined &&
+              !Number.isFinite(animation.speed)
+            ) {
+              fail(`${path}.visual.scene.cameraAnimation.speed`, "must be finite");
+            }
+          }
+        }
         if (scene.visual.scene.modelAssetId !== undefined) {
           if (!isNonEmptyString(scene.visual.scene.modelAssetId)) {
             fail(`${path}.visual.scene.modelAssetId`, "must be non-empty when provided");
