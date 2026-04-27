@@ -1,4 +1,5 @@
 import type { Caption } from "@remotion/captions";
+import { parseSrt } from "@remotion/captions";
 import { SubtitleTimelineClip } from "./types";
 
 export type SubtitleCue = Caption & {
@@ -52,4 +53,71 @@ export function subtitleTrackToTimelineClips(
   fps: number,
 ): SubtitleTimelineClip[] {
   return track.cues.map((cue) => cueToTimelineClip(cue, fps));
+}
+
+export function parseSrtToTrack(
+  input: string,
+  options: { id?: string; language?: string; label?: string } = {},
+): SubtitleTrack {
+  const { captions } = parseSrt({ input });
+  return captionsToTrack(captions, options);
+}
+
+function parseTimestampMs(raw: string): number {
+  const normalized = raw.trim().replace(",", ".");
+  const parts = normalized.split(":");
+  if (parts.length < 2 || parts.length > 3) {
+    throw new Error(`Invalid subtitle timestamp: ${raw}`);
+  }
+  const secondsPart = parts.pop() as string;
+  const minutes = Number(parts.pop());
+  const hours = parts.length === 1 ? Number(parts.pop()) : 0;
+  const seconds = Number(secondsPart);
+  if (![hours, minutes, seconds].every(Number.isFinite)) {
+    throw new Error(`Invalid subtitle timestamp: ${raw}`);
+  }
+  return Math.round(((hours * 60 + minutes) * 60 + seconds) * 1000);
+}
+
+export function parseVttToTrack(
+  input: string,
+  options: { id?: string; language?: string; label?: string } = {},
+): SubtitleTrack {
+  const normalized = input.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  const blocks = normalized
+    .replace(/^WEBVTT[^\n]*\n/, "")
+    .split(/\n{2,}/)
+    .map((block) => block.trim())
+    .filter(Boolean);
+
+  const captions: Caption[] = [];
+  for (const block of blocks) {
+    const lines = block.split("\n").filter(Boolean);
+    const timingLineIndex = lines.findIndex((line) => line.includes("-->"));
+    if (timingLineIndex === -1) continue;
+    const timingLine = lines[timingLineIndex];
+    const [startRaw, endAndSettings] = timingLine.split("-->").map((part) => part.trim());
+    const endRaw = endAndSettings.split(/\s+/)[0];
+    const text = lines.slice(timingLineIndex + 1).join("\n").trim();
+    if (!text) continue;
+    captions.push({
+      text,
+      startMs: parseTimestampMs(startRaw),
+      endMs: parseTimestampMs(endRaw),
+      timestampMs: null,
+      confidence: null,
+    });
+  }
+
+  return captionsToTrack(captions, options);
+}
+
+export function parseSubtitleTextToTrack(
+  input: string,
+  format: "srt" | "vtt",
+  options: { id?: string; language?: string; label?: string } = {},
+): SubtitleTrack {
+  return format === "srt"
+    ? parseSrtToTrack(input, options)
+    : parseVttToTrack(input, options);
 }

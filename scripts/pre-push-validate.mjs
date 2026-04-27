@@ -7,7 +7,7 @@ const steps = [
   ["npm", ["run", "validate:assets"]],
   ["npm", ["run", "smoke:media-scenes"]],
   ["npm", ["run", "lint"]],
-  ["npx", ["tsx", "--test", "src/tutorial/steps-data.test.ts"]],
+  ["npx", ["tsx", "--test", "src/tutorial/steps-data.test.ts", "src/timeline/subtitles.test.ts"]],
 ];
 
 for (const [command, args] of steps) {
