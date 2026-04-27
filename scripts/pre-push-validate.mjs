@@ -4,6 +4,7 @@ const steps = [
   ["npm", ["run", "validate:bootstrap"]],
   ["npm", ["run", "validate:content"]],
   ["npm", ["run", "validate:tutorial"]],
+  ["npm", ["run", "validate:voiceover"]],
   ["npm", ["run", "validate:assets"]],
   ["npm", ["run", "smoke:media-scenes"]],
   ["npm", ["run", "lint"]],
