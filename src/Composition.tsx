@@ -2,16 +2,18 @@ import React from "react";
 import { AbsoluteFill, Series, Sequence, staticFile } from "remotion";
 import { Audio } from "@remotion/media";
 import { WHITE } from "./constants";
-import { content } from "./content";
 import { SceneRenderer } from "./scenes/SceneRenderer";
+import { VideoContent } from "./types";
 
 export type VideoProps = {
+  content: VideoContent;
   sceneDurationsFrames: number[];
 };
 
 const FALLBACK_FRAMES = 120;
 
 export const MyComposition: React.FC<VideoProps> = ({
+  content,
   sceneDurationsFrames,
 }) => {
   const scenes = content.scenes;

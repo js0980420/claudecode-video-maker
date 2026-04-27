@@ -26,10 +26,11 @@ import {
   TutorialThumbnailIG,
   TutorialThumbnailReel,
 } from "./tutorial/TutorialThumbnails";
+import { VideoContent } from "./types";
 
 const durations = durationsJson as Record<string, number>;
 
-const sceneDurationSeconds = (content: typeof mainContent, sceneId: string): number => {
+const sceneDurationSeconds = (content: VideoContent, sceneId: string): number => {
   const scene = content.scenes.find((s) => s.id === sceneId);
   if (!scene) return content.meta.fallbackSceneSeconds;
   if (content.voiceover.enabled && typeof durations[sceneId] === "number") {
@@ -38,7 +39,7 @@ const sceneDurationSeconds = (content: typeof mainContent, sceneId: string): num
   return scene.durationSeconds ?? content.meta.fallbackSceneSeconds;
 };
 
-const createComposition = (content: typeof mainContent) => {
+const createComposition = (content: VideoContent) => {
   const SCENE_DURATIONS_FRAMES = content.scenes.map((scene) =>
     Math.ceil(sceneDurationSeconds(content, scene.id) * content.meta.fps),
   );
@@ -72,7 +73,10 @@ export const RemotionRoot: React.FC = () => {
         fps={mainContent.meta.fps}
         width={mainContent.meta.width}
         height={mainContent.meta.height}
-        defaultProps={{ sceneDurationsFrames: main.SCENE_DURATIONS_FRAMES }}
+        defaultProps={{
+          content: mainContent,
+          sceneDurationsFrames: main.SCENE_DURATIONS_FRAMES,
+        }}
         calculateMetadata={main.calculateMetadata}
       />
 
@@ -84,7 +88,10 @@ export const RemotionRoot: React.FC = () => {
         fps={testContent.meta.fps}
         width={testContent.meta.width}
         height={testContent.meta.height}
-        defaultProps={{ sceneDurationsFrames: test.SCENE_DURATIONS_FRAMES }}
+        defaultProps={{
+          content: testContent,
+          sceneDurationsFrames: test.SCENE_DURATIONS_FRAMES,
+        }}
         calculateMetadata={test.calculateMetadata}
       />
 
