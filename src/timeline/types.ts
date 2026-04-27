@@ -50,6 +50,20 @@ export type TextOverlayTimelineClip = TimelineClipBase & {
   tone?: "title" | "body" | "caption";
 };
 
+export type TitleOverlayTimelineClip = TimelineClipBase & {
+  type: "titleOverlay";
+  title: string;
+  kicker?: string;
+  subtitle?: string;
+};
+
+export type LowerThirdTimelineClip = TimelineClipBase & {
+  type: "lowerThird";
+  title: string;
+  subtitle?: string;
+  label?: string;
+};
+
 export type SubtitleTimelineClip = TimelineClipBase & {
   type: "subtitleCue";
   text: string;
@@ -67,6 +81,8 @@ export type TimelineClip =
   | VideoAssetTimelineClip
   | ImageAssetTimelineClip
   | TextOverlayTimelineClip
+  | TitleOverlayTimelineClip
+  | LowerThirdTimelineClip
   | SubtitleTimelineClip
   | AudioAssetTimelineClip;
 

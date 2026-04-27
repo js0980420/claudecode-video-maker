@@ -100,6 +100,102 @@ function renderClip(timeline: Timeline, clip: TimelineClip) {
           </VisualClipFrame>
         </Sequence>
       );
+    case "titleOverlay":
+      return (
+        <Sequence key={clip.id} from={clip.from} durationInFrames={clip.durationInFrames}>
+          <VisualClipFrame clip={clip}>
+            <AbsoluteFill
+              style={{
+                justifyContent: "center",
+                alignItems: "flex-start",
+                padding: "0 120px",
+                pointerEvents: "none",
+              }}
+            >
+              <div
+                style={{
+                  color: BLACK,
+                  maxWidth: 1180,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 18,
+                }}
+              >
+                {clip.kicker ? (
+                  <div
+                    style={{
+                      color: timeline.brand.primaryColor,
+                      fontSize: 30,
+                      fontWeight: 900,
+                      letterSpacing: 4,
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {clip.kicker}
+                  </div>
+                ) : null}
+                <div style={{ fontSize: 86, fontWeight: 900, lineHeight: 1.05 }}>
+                  {clip.title}
+                </div>
+                {clip.subtitle ? (
+                  <div style={{ fontSize: 38, fontWeight: 700, lineHeight: 1.25 }}>
+                    {clip.subtitle}
+                  </div>
+                ) : null}
+              </div>
+            </AbsoluteFill>
+          </VisualClipFrame>
+        </Sequence>
+      );
+    case "lowerThird":
+      return (
+        <Sequence key={clip.id} from={clip.from} durationInFrames={clip.durationInFrames}>
+          <VisualClipFrame clip={clip}>
+            <AbsoluteFill
+              style={{
+                justifyContent: "flex-end",
+                alignItems: "flex-start",
+                padding: "0 0 92px 96px",
+                pointerEvents: "none",
+              }}
+            >
+              <div
+                style={{
+                  minWidth: 520,
+                  maxWidth: 860,
+                  background: "rgba(255,255,255,0.92)",
+                  borderLeft: `12px solid ${timeline.brand.primaryColor}`,
+                  padding: "22px 28px",
+                  boxShadow: "0 18px 60px rgba(0,0,0,0.18)",
+                }}
+              >
+                {clip.label ? (
+                  <div
+                    style={{
+                      color: timeline.brand.primaryColor,
+                      fontSize: 22,
+                      fontWeight: 900,
+                      letterSpacing: 3,
+                      textTransform: "uppercase",
+                      marginBottom: 8,
+                    }}
+                  >
+                    {clip.label}
+                  </div>
+                ) : null}
+                <div style={{ color: BLACK, fontSize: 42, fontWeight: 900 }}>
+                  {clip.title}
+                </div>
+                {clip.subtitle ? (
+                  <div style={{ color: BLACK, fontSize: 26, fontWeight: 700, marginTop: 4 }}>
+                    {clip.subtitle}
+                  </div>
+                ) : null}
+              </div>
+            </AbsoluteFill>
+          </VisualClipFrame>
+        </Sequence>
+      );
     case "subtitleCue":
       return (
         <Sequence key={clip.id} from={clip.from} durationInFrames={clip.durationInFrames}>
