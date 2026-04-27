@@ -66,6 +66,7 @@ export type LowerThirdTimelineClip = TimelineClipBase & {
 
 export type SubtitleTimelineClip = TimelineClipBase & {
   type: "subtitleCue";
+  cueId?: string;
   text: string;
 };
 

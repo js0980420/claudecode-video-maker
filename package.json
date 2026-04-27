@@ -6,6 +6,7 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "@remotion/captions": "^4.0.451",
     "@remotion/cli": "4.0.451",
     "@remotion/google-fonts": "^4.0.451",
     "@remotion/media": "4.0.451",
