@@ -125,6 +125,11 @@ export type SceneVisual =
       senderInitial: string; // single letter shown in avatar circle
       messagePreview: string;
       ctaText: string; // big red button label
+    }
+  | {
+      type: "videoClip";
+      assetId: string; // id of a video asset from content.assets
+      fit?: "cover" | "contain";
     };
 
 export type SceneConfig = {

@@ -14,6 +14,7 @@ import { CrossedItems } from "./templates/CrossedItems";
 import { Terminal } from "./templates/Terminal";
 import { ChatBox } from "./templates/ChatBox";
 import { PhoneCTA } from "./templates/PhoneCTA";
+import { VideoClip } from "./templates/VideoClip";
 
 type Props = {
   scene: SceneConfig;
@@ -21,6 +22,7 @@ type Props = {
   totalScenes: number;
   sceneDuration: number;
   brand: VideoContent["brand"];
+  assets?: VideoContent["assets"];
 };
 
 export const SceneRenderer: React.FC<Props> = ({
@@ -29,6 +31,7 @@ export const SceneRenderer: React.FC<Props> = ({
   totalScenes,
   sceneDuration,
   brand,
+  assets,
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -80,7 +83,11 @@ export const SceneRenderer: React.FC<Props> = ({
           {parseHighlights(scene.title, brand.primaryColor)}
         </div>
 
-        <VisualSlot scene={scene} accentColor={brand.primaryColor} />
+        <VisualSlot
+          scene={scene}
+          accentColor={brand.primaryColor}
+          assets={assets}
+        />
 
         {scene.description ? (
           <div
@@ -102,7 +109,8 @@ export const SceneRenderer: React.FC<Props> = ({
 const VisualSlot: React.FC<{
   scene: SceneConfig;
   accentColor: string;
-}> = ({ scene, accentColor }) => {
+  assets?: VideoContent["assets"];
+}> = ({ scene, accentColor, assets }) => {
   switch (scene.visual.type) {
     case "centerText":
       return null;
@@ -116,5 +124,7 @@ const VisualSlot: React.FC<{
       return <ChatBox {...scene.visual} accentColor={accentColor} />;
     case "phoneCTA":
       return <PhoneCTA {...scene.visual} accentColor={accentColor} />;
+    case "videoClip":
+      return <VideoClip {...scene.visual} assets={assets} />;
   }
 };

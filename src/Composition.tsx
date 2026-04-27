@@ -41,6 +41,7 @@ export const MyComposition: React.FC<VideoProps> = ({
               totalScenes={scenes.length}
               sceneDuration={safeDurations[i]}
               brand={content.brand}
+              assets={content.assets}
             />
           </Series.Sequence>
         ))}
