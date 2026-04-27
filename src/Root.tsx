@@ -32,8 +32,22 @@ import {
   TimelineCompositionProps,
 } from "./timeline/TimelineComposition";
 import { compileShortFormTimeline } from "./timeline/compileShortForm";
+import { Timeline } from "./timeline/types";
 
 const durations = durationsJson as Record<string, number>;
+
+const editPlanPreviewTimeline: Timeline = {
+  id: "edit-plan-preview",
+  width: 1080,
+  height: 1920,
+  fps: 30,
+  durationInFrames: 90,
+  brand: {
+    name: "Preview",
+    primaryColor: "#E63946",
+  },
+  tracks: [],
+};
 
 const sceneDurationSeconds = (content: VideoContent, sceneId: string): number => {
   const scene = content.scenes.find((s) => s.id === sceneId);
@@ -135,6 +149,17 @@ export const RemotionRoot: React.FC = () => {
         width={testTimeline.width}
         height={testTimeline.height}
         defaultProps={{ timeline: testTimeline }}
+        calculateMetadata={calculateTimelineMetadata}
+      />
+
+      <Composition
+        id="EditPlanPreview"
+        component={TimelineComposition}
+        durationInFrames={editPlanPreviewTimeline.durationInFrames}
+        fps={editPlanPreviewTimeline.fps}
+        width={editPlanPreviewTimeline.width}
+        height={editPlanPreviewTimeline.height}
+        defaultProps={{ timeline: editPlanPreviewTimeline }}
         calculateMetadata={calculateTimelineMetadata}
       />
 
