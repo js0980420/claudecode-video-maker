@@ -1,4 +1,6 @@
 import React from "react";
+import { staticFile } from "remotion";
+import { Video } from "@remotion/media";
 import { AssetManifest } from "../../types";
 import { findAsset } from "../../utils/assets";
 import { BLACK, GRAY, WHITE } from "../../constants";
@@ -9,39 +11,73 @@ export const VideoClip: React.FC<{
   assetId: string;
   assets?: AssetManifest;
   fit?: "cover" | "contain";
-}> = ({ assetId, assets }) => {
+}> = ({ assetId, assets, fit = "cover" }) => {
   const asset = findAsset(assets, assetId, "video");
+  if (!asset) {
+    return (
+      <div
+        style={{
+          width: 980,
+          height: 420,
+          borderRadius: 24,
+          background: "#FFF5F5",
+          color: MISSING_COLOR,
+          border: `3px solid ${MISSING_COLOR}`,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 18,
+          overflow: "hidden",
+        }}
+      >
+        <div style={{ fontSize: 34, fontWeight: 900 }}>MISSING VIDEO ASSET</div>
+        <div style={{ fontSize: 24, fontWeight: 700 }}>{assetId}</div>
+        <div style={{ fontSize: 18 }}>Check content.assets.</div>
+      </div>
+    );
+  }
+
   return (
     <div
       style={{
+        position: "relative",
         width: 980,
         height: 420,
         borderRadius: 24,
-        background: asset ? BLACK : "#FFF5F5",
-        color: asset ? WHITE : MISSING_COLOR,
-        border: `3px solid ${asset ? BLACK : MISSING_COLOR}`,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        gap: 18,
+        background: BLACK,
+        color: WHITE,
         overflow: "hidden",
+        boxShadow: "0 24px 80px rgba(0,0,0,0.18)",
       }}
     >
-      <div style={{ fontSize: 34, fontWeight: 900 }}>
-        {asset ? "VIDEO CLIP" : "MISSING VIDEO ASSET"}
-      </div>
+      <Video
+        src={staticFile(asset.src)}
+        muted
+        objectFit={fit}
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "block",
+        }}
+      />
       <div
         style={{
+          position: "absolute",
+          left: 24,
+          bottom: 20,
           fontSize: 24,
-          fontWeight: 700,
-          color: asset ? "#DDDDDD" : MISSING_COLOR,
+          fontWeight: 900,
+          color: WHITE,
+          textShadow: "0 2px 12px rgba(0,0,0,0.5)",
         }}
       >
-        {asset ? asset.src : assetId}
-      </div>
-      <div style={{ fontSize: 18, color: asset ? GRAY : MISSING_COLOR }}>
-        {asset ? "Playback is enabled by the media renderer." : "Check content.assets."}
+        {asset.label ?? asset.id}
+        {asset.attribution ? (
+          <span style={{ color: GRAY, marginLeft: 12, fontSize: 16 }}>
+            {asset.attribution}
+          </span>
+        ) : null}
       </div>
     </div>
   );
