@@ -1,6 +1,6 @@
 import type { Caption } from "@remotion/captions";
 import { parseSrt } from "@remotion/captions";
-import { SubtitleTimelineClip } from "./types";
+import { SubtitleTimelineClip, TimelineTrack } from "./types";
 
 export type SubtitleCue = Caption & {
   id: string;
@@ -11,6 +11,12 @@ export type SubtitleTrack = {
   language?: string;
   label?: string;
   cues: SubtitleCue[];
+};
+
+export type SubtitleBurnInOptions = {
+  enabled?: boolean;
+  trackId?: string;
+  style?: SubtitleTimelineClip["style"];
 };
 
 export function captionToCue(caption: Caption, index: number): SubtitleCue {
@@ -96,6 +102,19 @@ export function subtitleTrackToTimelineClips(
   style: SubtitleTimelineClip["style"] = "standard",
 ): SubtitleTimelineClip[] {
   return track.cues.map((cue) => cueToTimelineClip(cue, fps, style));
+}
+
+export function subtitleTrackToTimelineTrack(
+  track: SubtitleTrack,
+  fps: number,
+  options: SubtitleBurnInOptions = {},
+): TimelineTrack | null {
+  if (options.enabled === false) return null;
+  return {
+    id: options.trackId ?? track.id,
+    kind: "subtitle",
+    clips: subtitleTrackToTimelineClips(track, fps, options.style),
+  };
 }
 
 export function parseSrtToTrack(

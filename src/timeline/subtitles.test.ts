@@ -5,6 +5,7 @@ import {
   parseSrtToTrack,
   parseVttToTrack,
   subtitleTrackToTimelineClips,
+  subtitleTrackToTimelineTrack,
 } from "./subtitles";
 
 test("parseSrtToTrack parses cues into the shared subtitle model", () => {
@@ -78,4 +79,28 @@ test("subtitleTrackToTimelineClips preserves platform style presets", () => {
 
   const clips = subtitleTrackToTimelineClips(track, 30, "reel");
   assert.equal(clips[0].style, "reel");
+});
+
+test("subtitleTrackToTimelineTrack creates an enabled burn-in track", () => {
+  const track = parseVttToTrack(
+    ["WEBVTT", "", "00:00:00.000 --> 00:00:01.000", "Burn in"].join("\n"),
+    { id: "captions" },
+  );
+
+  const timelineTrack = subtitleTrackToTimelineTrack(track, 30, {
+    style: "youtube",
+    trackId: "youtube-captions",
+  });
+  assert.equal(timelineTrack?.id, "youtube-captions");
+  assert.equal(timelineTrack?.kind, "subtitle");
+  assert.equal(timelineTrack?.clips[0].type, "subtitleCue");
+  assert.equal(timelineTrack?.clips[0].style, "youtube");
+});
+
+test("subtitleTrackToTimelineTrack returns null when burn-in is disabled", () => {
+  const track = parseVttToTrack(
+    ["WEBVTT", "", "00:00:00.000 --> 00:00:01.000", "Sidecar only"].join("\n"),
+  );
+
+  assert.equal(subtitleTrackToTimelineTrack(track, 30, { enabled: false }), null);
 });
