@@ -1,5 +1,5 @@
 import React from "react";
-import { staticFile } from "remotion";
+import { staticFile, useVideoConfig } from "remotion";
 import { Video } from "@remotion/media";
 import { AssetManifest } from "../../types";
 import { findAsset } from "../../utils/assets";
@@ -11,7 +11,22 @@ export const VideoClip: React.FC<{
   assetId: string;
   assets?: AssetManifest;
   fit?: "cover" | "contain";
-}> = ({ assetId, assets, fit = "cover" }) => {
+  startFromSeconds?: number;
+  endAtSeconds?: number;
+  playbackRate?: number;
+  volume?: number;
+  muted?: boolean;
+}> = ({
+  assetId,
+  assets,
+  fit = "cover",
+  startFromSeconds = 0,
+  endAtSeconds,
+  playbackRate = 1,
+  volume = 0,
+  muted = true,
+}) => {
+  const { fps } = useVideoConfig();
   const asset = findAsset(assets, assetId, "video");
   if (!asset) {
     return (
@@ -53,8 +68,16 @@ export const VideoClip: React.FC<{
     >
       <Video
         src={staticFile(asset.src)}
-        muted
+        muted={muted}
         objectFit={fit}
+        playbackRate={playbackRate}
+        trimBefore={Math.max(0, Math.floor(startFromSeconds * fps))}
+        trimAfter={
+          endAtSeconds === undefined
+            ? undefined
+            : Math.max(0, Math.floor(endAtSeconds * fps))
+        }
+        volume={() => (muted ? 0 : volume)}
         style={{
           width: "100%",
           height: "100%",

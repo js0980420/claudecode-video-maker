@@ -130,6 +130,11 @@ export type SceneVisual =
       type: "videoClip";
       assetId: string; // id of a video asset from content.assets
       fit?: "cover" | "contain";
+      startFromSeconds?: number;
+      endAtSeconds?: number;
+      playbackRate?: number;
+      volume?: number; // 0..1, default 0
+      muted?: boolean; // default true
     }
   | {
       type: "imageBackground";

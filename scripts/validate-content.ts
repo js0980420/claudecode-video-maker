@@ -110,6 +110,43 @@ function validateScene(scene: SceneConfig, index: number) {
       ) {
         fail(`${path}.visual.fit`, "must be cover or contain");
       }
+      if (
+        scene.visual.startFromSeconds !== undefined &&
+        scene.visual.startFromSeconds < 0
+      ) {
+        fail(`${path}.visual.startFromSeconds`, "must be >= 0");
+      }
+      if (
+        scene.visual.endAtSeconds !== undefined &&
+        scene.visual.endAtSeconds <= 0
+      ) {
+        fail(`${path}.visual.endAtSeconds`, "must be > 0");
+      }
+      if (
+        scene.visual.startFromSeconds !== undefined &&
+        scene.visual.endAtSeconds !== undefined &&
+        scene.visual.endAtSeconds <= scene.visual.startFromSeconds
+      ) {
+        fail(`${path}.visual.endAtSeconds`, "must be greater than startFromSeconds");
+      }
+      if (
+        scene.visual.playbackRate !== undefined &&
+        scene.visual.playbackRate <= 0
+      ) {
+        fail(`${path}.visual.playbackRate`, "must be > 0");
+      }
+      if (
+        scene.visual.volume !== undefined &&
+        (scene.visual.volume < 0 || scene.visual.volume > 1)
+      ) {
+        fail(`${path}.visual.volume`, "must be between 0 and 1");
+      }
+      if (
+        scene.visual.muted !== undefined &&
+        typeof scene.visual.muted !== "boolean"
+      ) {
+        fail(`${path}.visual.muted`, "must be boolean");
+      }
       break;
     case "imageBackground":
       if (!isNonEmptyString(scene.visual.assetId)) {
