@@ -99,6 +99,13 @@ export type ColorAdjustment = {
   vignette?: number; // 0..1, default 0
 };
 
+export type AudioDuckingConfig = {
+  enabled: boolean;
+  volumeMultiplier?: number; // 0..1, default 0.35
+  attackFrames?: number; // default 12
+  releaseFrames?: number; // default 18
+};
+
 export type BrollSequenceItem = {
   assetId: string; // id of an image or video asset from content.assets
   durationSeconds?: number;
@@ -255,6 +262,7 @@ export type VideoContent = {
     volume?: number; // 0..1, default 0.55
     fadeInFrames?: number;
     fadeOutFrames?: number;
+    ducking?: AudioDuckingConfig;
     attribution?: string; // CC BY etc., for your video description
   };
   thumbnails: {

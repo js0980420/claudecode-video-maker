@@ -4,6 +4,10 @@ import { Audio } from "@remotion/media";
 import { WHITE } from "./constants";
 import { SceneRenderer } from "./scenes/SceneRenderer";
 import { VideoContent } from "./types";
+import {
+  AudioDuckingRange,
+  duckingMultiplierAtFrame,
+} from "./utils/audioDucking";
 
 export type VideoProps = {
   content: VideoContent;
@@ -25,6 +29,14 @@ export const MyComposition: React.FC<VideoProps> = ({
       : FALLBACK_FRAMES;
   });
   const totalFrames = safeDurations.reduce((sum, d) => sum + d, 0);
+  const voiceoverRanges = content.voiceover.enabled
+    ? scenes.reduce<AudioDuckingRange[]>((ranges, scene, i) => {
+        if (!scene.voiceover) return ranges;
+        const from = safeDurations.slice(0, i).reduce((sum, d) => sum + d, 0);
+        ranges.push({ from, to: from + safeDurations[i] });
+        return ranges;
+      }, [])
+    : [];
 
   return (
     <AbsoluteFill style={{ backgroundColor: WHITE }}>
@@ -69,6 +81,8 @@ export const MyComposition: React.FC<VideoProps> = ({
           totalFrames={totalFrames}
           fadeInFrames={content.bgm.fadeInFrames ?? 18}
           fadeOutFrames={content.bgm.fadeOutFrames ?? 30}
+          ducking={content.bgm.ducking}
+          voiceoverRanges={voiceoverRanges}
         />
       ) : null}
     </AbsoluteFill>
@@ -81,7 +95,17 @@ const BgmTrack: React.FC<{
   totalFrames: number;
   fadeInFrames: number;
   fadeOutFrames: number;
-}> = ({ file, volume, totalFrames, fadeInFrames, fadeOutFrames }) => (
+  ducking?: VideoContent["bgm"]["ducking"];
+  voiceoverRanges: AudioDuckingRange[];
+}> = ({
+  file,
+  volume,
+  totalFrames,
+  fadeInFrames,
+  fadeOutFrames,
+  ducking,
+  voiceoverRanges,
+}) => (
   <Audio
     src={staticFile(file)}
     loop
@@ -89,7 +113,11 @@ const BgmTrack: React.FC<{
     volume={(f) => {
       const inGain = Math.min(1, f / fadeInFrames);
       const outGain = Math.min(1, (totalFrames - f) / fadeOutFrames);
-      return volume * Math.max(0, Math.min(inGain, outGain));
+      return (
+        volume *
+        Math.max(0, Math.min(inGain, outGain)) *
+        duckingMultiplierAtFrame(f, voiceoverRanges, ducking)
+      );
     }}
   />
 );

@@ -477,6 +477,32 @@ if (content.bgm.enabled && !isNonEmptyString(content.bgm.file)) {
 if (content.bgm.volume !== undefined && (content.bgm.volume < 0 || content.bgm.volume > 1)) {
   fail("bgm.volume", "must be between 0 and 1");
 }
+if (content.bgm.ducking !== undefined) {
+  if (typeof content.bgm.ducking.enabled !== "boolean") {
+    fail("bgm.ducking.enabled", "must be boolean");
+  }
+  if (
+    content.bgm.ducking.volumeMultiplier !== undefined &&
+    (content.bgm.ducking.volumeMultiplier < 0 ||
+      content.bgm.ducking.volumeMultiplier > 1)
+  ) {
+    fail("bgm.ducking.volumeMultiplier", "must be between 0 and 1");
+  }
+  if (
+    content.bgm.ducking.attackFrames !== undefined &&
+    (!Number.isFinite(content.bgm.ducking.attackFrames) ||
+      content.bgm.ducking.attackFrames < 0)
+  ) {
+    fail("bgm.ducking.attackFrames", "must be >= 0");
+  }
+  if (
+    content.bgm.ducking.releaseFrames !== undefined &&
+    (!Number.isFinite(content.bgm.ducking.releaseFrames) ||
+      content.bgm.ducking.releaseFrames < 0)
+  ) {
+    fail("bgm.ducking.releaseFrames", "must be >= 0");
+  }
+}
 
 if (content.thumbnails.yt) validateThumbnail("thumbnails.yt", content.thumbnails.yt);
 if (content.thumbnails.ig) validateThumbnail("thumbnails.ig", content.thumbnails.ig);
