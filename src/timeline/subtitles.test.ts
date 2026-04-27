@@ -70,3 +70,12 @@ test("subtitleTrackToTimelineClips converts milliseconds to frames", () => {
   assert.equal(clips[0].durationInFrames, 30);
   assert.equal(clips[0].style, "sentence");
 });
+
+test("subtitleTrackToTimelineClips preserves platform style presets", () => {
+  const track = parseVttToTrack(
+    ["WEBVTT", "", "00:00:00.000 --> 00:00:01.000", "Preset"].join("\n"),
+  );
+
+  const clips = subtitleTrackToTimelineClips(track, 30, "reel");
+  assert.equal(clips[0].style, "reel");
+});

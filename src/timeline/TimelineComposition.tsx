@@ -196,7 +196,49 @@ function renderClip(timeline: Timeline, clip: TimelineClip) {
           </VisualClipFrame>
         </Sequence>
       );
-    case "subtitleCue":
+    case "subtitleCue": {
+      const subtitleStyle = {
+        standard: {
+          padding: "0 120px 80px",
+          fontSize: 34,
+          borderRadius: 10,
+          maxWidth: 1180,
+          background: "rgba(0,0,0,0.72)",
+          color: WHITE,
+        },
+        sentence: {
+          padding: "0 160px 140px",
+          fontSize: 46,
+          borderRadius: 14,
+          maxWidth: 1280,
+          background: "rgba(0,0,0,0.72)",
+          color: WHITE,
+        },
+        youtube: {
+          padding: "0 160px 92px",
+          fontSize: 42,
+          borderRadius: 8,
+          maxWidth: 1360,
+          background: "rgba(0,0,0,0.78)",
+          color: WHITE,
+        },
+        reel: {
+          padding: "0 92px 210px",
+          fontSize: 56,
+          borderRadius: 18,
+          maxWidth: 900,
+          background: timeline.brand.primaryColor,
+          color: WHITE,
+        },
+        tutorial: {
+          padding: "0 140px 74px",
+          fontSize: 34,
+          borderRadius: 8,
+          maxWidth: 1240,
+          background: "rgba(255,255,255,0.92)",
+          color: BLACK,
+        },
+      }[clip.style ?? "standard"];
       return (
         <Sequence key={clip.id} from={clip.from} durationInFrames={clip.durationInFrames}>
           <VisualClipFrame clip={clip}>
@@ -204,21 +246,22 @@ function renderClip(timeline: Timeline, clip: TimelineClip) {
               style={{
                 justifyContent: "flex-end",
                 alignItems: "center",
-                padding: clip.style === "sentence" ? "0 160px 140px" : "0 120px 80px",
+                padding: subtitleStyle.padding,
                 pointerEvents: "none",
               }}
             >
               <div
                 style={{
-                  color: WHITE,
-                  background: "rgba(0,0,0,0.72)",
-                  padding: clip.style === "sentence" ? "18px 30px" : "14px 24px",
-                  borderRadius: clip.style === "sentence" ? 14 : 10,
-                  fontSize: clip.style === "sentence" ? 46 : 34,
+                  color: subtitleStyle.color,
+                  background: subtitleStyle.background,
+                  padding: "14px 24px",
+                  borderRadius: subtitleStyle.borderRadius,
+                  fontSize: subtitleStyle.fontSize,
                   fontWeight: 900,
                   lineHeight: 1.18,
                   textAlign: "center",
-                  maxWidth: clip.style === "sentence" ? 1280 : 1180,
+                  maxWidth: subtitleStyle.maxWidth,
+                  boxShadow: "0 12px 44px rgba(0,0,0,0.18)",
                 }}
               >
                 {clip.text}
@@ -227,6 +270,7 @@ function renderClip(timeline: Timeline, clip: TimelineClip) {
           </VisualClipFrame>
         </Sequence>
       );
+    }
     case "audioAsset": {
       const asset = findAsset(timeline.assets, clip.assetId, "audio");
       if (!asset) return null;
