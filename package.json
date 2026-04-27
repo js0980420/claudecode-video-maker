@@ -44,6 +44,7 @@
     "validate:assets": "tsx scripts/validate-assets.ts",
     "smoke:media-scenes": "tsx scripts/smoke-media-scenes.ts",
     "prepush:validate": "node scripts/pre-push-validate.mjs",
+    "transcript:export": "tsx scripts/export-transcript.ts",
     "publish:threads": "node scripts/publish-threads.mjs",
     "archive": "node scripts/archive.mjs",
     "upgrade": "remotion upgrade",

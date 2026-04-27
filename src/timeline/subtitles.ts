@@ -19,6 +19,15 @@ export type SubtitleBurnInOptions = {
   style?: SubtitleTimelineClip["style"];
 };
 
+export type TranscriptEntry = {
+  id: string;
+  startMs: number;
+  endMs: number;
+  text: string;
+};
+
+export type TranscriptExportFormat = "text" | "timestamped" | "json";
+
 export function captionToCue(caption: Caption, index: number): SubtitleCue {
   return {
     ...caption,
@@ -115,6 +124,61 @@ export function subtitleTrackToTimelineTrack(
     kind: "subtitle",
     clips: subtitleTrackToTimelineClips(track, fps, options.style),
   };
+}
+
+export function subtitleTrackToTranscriptEntries(
+  track: SubtitleTrack,
+): TranscriptEntry[] {
+  return track.cues.map((cue) => ({
+    id: cue.id,
+    startMs: cue.startMs,
+    endMs: cue.endMs,
+    text: cue.text.replace(/\s+/g, " ").trim(),
+  }));
+}
+
+export function formatTranscriptTimestamp(ms: number): string {
+  const safeMs = Math.max(0, Math.round(ms));
+  const hours = Math.floor(safeMs / 3600000);
+  const minutes = Math.floor((safeMs % 3600000) / 60000);
+  const seconds = Math.floor((safeMs % 60000) / 1000);
+  const milliseconds = safeMs % 1000;
+  return [
+    String(hours).padStart(2, "0"),
+    String(minutes).padStart(2, "0"),
+    String(seconds).padStart(2, "0"),
+  ].join(":") + `.${String(milliseconds).padStart(3, "0")}`;
+}
+
+export function subtitleTrackToPlainTranscript(track: SubtitleTrack): string {
+  return subtitleTrackToTranscriptEntries(track)
+    .map((entry) => entry.text)
+    .filter(Boolean)
+    .join("\n");
+}
+
+export function subtitleTrackToTimestampedTranscript(track: SubtitleTrack): string {
+  return subtitleTrackToTranscriptEntries(track)
+    .map(
+      (entry) =>
+        `[${formatTranscriptTimestamp(entry.startMs)} --> ${formatTranscriptTimestamp(
+          entry.endMs,
+        )}] ${entry.text}`,
+    )
+    .join("\n");
+}
+
+export function subtitleTrackToJsonTranscript(track: SubtitleTrack): string {
+  return JSON.stringify(subtitleTrackToTranscriptEntries(track), null, 2);
+}
+
+export function exportSubtitleTrackTranscript(
+  track: SubtitleTrack,
+  format: TranscriptExportFormat = "text",
+): string {
+  if (format === "timestamped") return subtitleTrackToTimestampedTranscript(track);
+  if (format === "json") return subtitleTrackToJsonTranscript(track);
+  return subtitleTrackToPlainTranscript(track);
 }
 
 export function parseSrtToTrack(

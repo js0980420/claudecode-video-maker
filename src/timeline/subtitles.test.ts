@@ -2,8 +2,13 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   captionsToSentenceTrack,
+  exportSubtitleTrackTranscript,
+  formatTranscriptTimestamp,
   parseSrtToTrack,
   parseVttToTrack,
+  subtitleTrackToJsonTranscript,
+  subtitleTrackToPlainTranscript,
+  subtitleTrackToTimestampedTranscript,
   subtitleTrackToTimelineClips,
   subtitleTrackToTimelineTrack,
 } from "./subtitles";
@@ -103,4 +108,45 @@ test("subtitleTrackToTimelineTrack returns null when burn-in is disabled", () =>
   );
 
   assert.equal(subtitleTrackToTimelineTrack(track, 30, { enabled: false }), null);
+});
+
+test("transcript helpers export plain and timestamped text", () => {
+  const track = parseSrtToTrack(
+    [
+      "1",
+      "00:00:01,250 --> 00:00:02,500",
+      "Hello",
+      "world",
+      "",
+      "2",
+      "00:00:03,000 --> 00:00:04,000",
+      "Next line",
+    ].join("\n"),
+  );
+
+  assert.equal(formatTranscriptTimestamp(1250), "00:00:01.250");
+  assert.equal(subtitleTrackToPlainTranscript(track), "Hello world\nNext line");
+  assert.equal(
+    subtitleTrackToTimestampedTranscript(track),
+    [
+      "[00:00:01.250 --> 00:00:02.500] Hello world",
+      "[00:00:03.000 --> 00:00:04.000] Next line",
+    ].join("\n"),
+  );
+});
+
+test("transcript helpers export json entries", () => {
+  const track = parseVttToTrack(
+    ["WEBVTT", "", "00:00:00.000 --> 00:00:01.000", "JSON line"].join("\n"),
+  );
+
+  assert.deepEqual(JSON.parse(subtitleTrackToJsonTranscript(track)), [
+    {
+      id: "cue-0001",
+      startMs: 0,
+      endMs: 1000,
+      text: "JSON line",
+    },
+  ]);
+  assert.equal(exportSubtitleTrackTranscript(track, "json"), subtitleTrackToJsonTranscript(track));
 });
