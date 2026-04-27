@@ -3,6 +3,7 @@ import { AbsoluteFill, Img, Sequence, staticFile, useVideoConfig } from "remotio
 import { Video } from "@remotion/media";
 import { AssetManifest, BrollSequenceItem, MediaAsset } from "../../types";
 import { findAsset } from "../../utils/assets";
+import { dimensionsForCropPreset } from "../../utils/cropPresets";
 import { parseHighlights } from "../../utils/parseHighlights";
 import { BLACK, WHITE } from "../../constants";
 
@@ -132,8 +133,10 @@ export const BrollSequence: React.FC<{
   accentColor: string;
   sceneDuration: number;
   fit?: "cover" | "contain";
-}> = ({ items, assets, accentColor, sceneDuration, fit = "cover" }) => {
+  cropPreset?: "16:9" | "1:1" | "4:5" | "9:16";
+}> = ({ items, assets, accentColor, sceneDuration, fit = "cover", cropPreset }) => {
   const { fps } = useVideoConfig();
+  const frameSize = dimensionsForCropPreset(WIDTH, HEIGHT, cropPreset);
   const durations = itemDurations(items, fps, sceneDuration);
   let cursor = 0;
 
@@ -141,8 +144,8 @@ export const BrollSequence: React.FC<{
     <div
       style={{
         position: "relative",
-        width: WIDTH,
-        height: HEIGHT,
+        width: frameSize.width,
+        height: frameSize.height,
         borderRadius: 18,
         overflow: "hidden",
         background: BLACK,

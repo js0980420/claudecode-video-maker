@@ -2,6 +2,7 @@ import React from "react";
 import { Img, staticFile } from "remotion";
 import { AssetManifest } from "../../types";
 import { findAsset } from "../../utils/assets";
+import { dimensionsForCropPreset } from "../../utils/cropPresets";
 import { BLACK, GRAY, WHITE } from "../../constants";
 
 const MISSING_COLOR = "#E63946";
@@ -10,15 +11,17 @@ export const ImageBackground: React.FC<{
   assetId: string;
   assets?: AssetManifest;
   fit?: "cover" | "contain";
+  cropPreset?: "16:9" | "1:1" | "4:5" | "9:16";
   dim?: number;
-}> = ({ assetId, assets, fit = "cover", dim = 0.12 }) => {
+}> = ({ assetId, assets, fit = "cover", cropPreset, dim = 0.12 }) => {
+  const frameSize = dimensionsForCropPreset(980, 420, cropPreset);
   const asset = findAsset(assets, assetId, "image");
   if (!asset) {
     return (
       <div
         style={{
-          width: 980,
-          height: 420,
+          width: frameSize.width,
+          height: frameSize.height,
           borderRadius: 24,
           background: "#FFF5F5",
           color: MISSING_COLOR,
@@ -41,8 +44,8 @@ export const ImageBackground: React.FC<{
     <div
       style={{
         position: "relative",
-        width: 980,
-        height: 420,
+        width: frameSize.width,
+        height: frameSize.height,
         borderRadius: 24,
         overflow: "hidden",
         background: BLACK,

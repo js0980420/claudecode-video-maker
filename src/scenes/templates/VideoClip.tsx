@@ -3,6 +3,7 @@ import { staticFile, useVideoConfig } from "remotion";
 import { Video } from "@remotion/media";
 import { AssetManifest } from "../../types";
 import { findAsset } from "../../utils/assets";
+import { dimensionsForCropPreset } from "../../utils/cropPresets";
 import { BLACK, GRAY, WHITE } from "../../constants";
 
 const MISSING_COLOR = "#E63946";
@@ -11,6 +12,7 @@ export const VideoClip: React.FC<{
   assetId: string;
   assets?: AssetManifest;
   fit?: "cover" | "contain";
+  cropPreset?: "16:9" | "1:1" | "4:5" | "9:16";
   startFromSeconds?: number;
   endAtSeconds?: number;
   playbackRate?: number;
@@ -20,6 +22,7 @@ export const VideoClip: React.FC<{
   assetId,
   assets,
   fit = "cover",
+  cropPreset,
   startFromSeconds = 0,
   endAtSeconds,
   playbackRate = 1,
@@ -27,13 +30,14 @@ export const VideoClip: React.FC<{
   muted = true,
 }) => {
   const { fps } = useVideoConfig();
+  const frameSize = dimensionsForCropPreset(980, 420, cropPreset);
   const asset = findAsset(assets, assetId, "video");
   if (!asset) {
     return (
       <div
         style={{
-          width: 980,
-          height: 420,
+          width: frameSize.width,
+          height: frameSize.height,
           borderRadius: 24,
           background: "#FFF5F5",
           color: MISSING_COLOR,
@@ -57,8 +61,8 @@ export const VideoClip: React.FC<{
     <div
       style={{
         position: "relative",
-        width: 980,
-        height: 420,
+        width: frameSize.width,
+        height: frameSize.height,
         borderRadius: 24,
         background: BLACK,
         color: WHITE,

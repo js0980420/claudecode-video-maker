@@ -3,6 +3,7 @@ import { AbsoluteFill, Img, staticFile, useVideoConfig } from "remotion";
 import { Video } from "@remotion/media";
 import { AssetManifest, MediaAsset, TalkingHeadLayout } from "../../types";
 import { findAsset } from "../../utils/assets";
+import { dimensionsForCropPreset } from "../../utils/cropPresets";
 import { BLACK, WHITE } from "../../constants";
 
 const MISSING_COLOR = "#E63946";
@@ -94,6 +95,7 @@ export const TalkingHead: React.FC<{
   accentColor: string;
   layout?: TalkingHeadLayout;
   fit?: "cover" | "contain";
+  cropPreset?: "16:9" | "1:1" | "4:5" | "9:16";
   startFromSeconds?: number;
   endAtSeconds?: number;
   playbackRate?: number;
@@ -108,6 +110,7 @@ export const TalkingHead: React.FC<{
   accentColor,
   layout = "full",
   fit = "cover",
+  cropPreset,
   startFromSeconds,
   endAtSeconds,
   playbackRate,
@@ -119,13 +122,14 @@ export const TalkingHead: React.FC<{
   const speaker = findAsset(assets, speakerAssetId, "video");
   const supporting = supportingAssetId ? findAsset(assets, supportingAssetId) : null;
   const resolvedLayout = supportingAssetId ? layout : "full";
+  const frameSize = dimensionsForCropPreset(1100, 520, cropPreset);
 
   return (
     <div
       style={{
         position: "relative",
-        width: 1100,
-        height: 520,
+        width: frameSize.width,
+        height: frameSize.height,
         borderRadius: 18,
         overflow: "hidden",
         background: BLACK,

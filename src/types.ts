@@ -85,6 +85,8 @@ export type AssetManifest = {
 // Use \n for line breaks.
 export type RichText = string;
 
+export type CropPreset = "16:9" | "1:1" | "4:5" | "9:16";
+
 export type BrollSequenceItem = {
   assetId: string; // id of an image or video asset from content.assets
   durationSeconds?: number;
@@ -144,6 +146,7 @@ export type SceneVisual =
       type: "videoClip";
       assetId: string; // id of a video asset from content.assets
       fit?: "cover" | "contain";
+      cropPreset?: CropPreset;
       startFromSeconds?: number;
       endAtSeconds?: number;
       playbackRate?: number;
@@ -154,12 +157,14 @@ export type SceneVisual =
       type: "imageBackground";
       assetId: string; // id of an image asset from content.assets
       fit?: "cover" | "contain";
+      cropPreset?: CropPreset;
       dim?: number; // 0..0.8 overlay opacity
     }
   | {
       type: "brollSequence";
       items: BrollSequenceItem[];
       fit?: "cover" | "contain"; // default for items
+      cropPreset?: CropPreset;
     }
   | {
       type: "talkingHead";
@@ -167,6 +172,7 @@ export type SceneVisual =
       supportingAssetId?: string; // optional image or video asset from content.assets
       layout?: TalkingHeadLayout;
       fit?: "cover" | "contain";
+      cropPreset?: CropPreset;
       startFromSeconds?: number;
       endAtSeconds?: number;
       playbackRate?: number;

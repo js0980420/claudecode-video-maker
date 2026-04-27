@@ -1,5 +1,6 @@
 import { content } from "../src/content";
 import { SceneConfig, ThumbnailContent } from "../src/types";
+import { isCropPreset } from "../src/utils/cropPresets";
 
 const errors: string[] = [];
 
@@ -111,6 +112,12 @@ function validateScene(scene: SceneConfig, index: number) {
         fail(`${path}.visual.fit`, "must be cover or contain");
       }
       if (
+        scene.visual.cropPreset !== undefined &&
+        !isCropPreset(scene.visual.cropPreset)
+      ) {
+        fail(`${path}.visual.cropPreset`, "must be 16:9, 1:1, 4:5, or 9:16");
+      }
+      if (
         scene.visual.startFromSeconds !== undefined &&
         scene.visual.startFromSeconds < 0
       ) {
@@ -158,6 +165,12 @@ function validateScene(scene: SceneConfig, index: number) {
         scene.visual.fit !== "contain"
       ) {
         fail(`${path}.visual.fit`, "must be cover or contain");
+      }
+      if (
+        scene.visual.cropPreset !== undefined &&
+        !isCropPreset(scene.visual.cropPreset)
+      ) {
+        fail(`${path}.visual.cropPreset`, "must be 16:9, 1:1, 4:5, or 9:16");
       }
       if (
         scene.visual.dim !== undefined &&
@@ -237,6 +250,12 @@ function validateScene(scene: SceneConfig, index: number) {
       ) {
         fail(`${path}.visual.fit`, "must be cover or contain");
       }
+      if (
+        scene.visual.cropPreset !== undefined &&
+        !isCropPreset(scene.visual.cropPreset)
+      ) {
+        fail(`${path}.visual.cropPreset`, "must be 16:9, 1:1, 4:5, or 9:16");
+      }
       break;
     case "talkingHead":
       if (!isNonEmptyString(scene.visual.speakerAssetId)) {
@@ -262,6 +281,12 @@ function validateScene(scene: SceneConfig, index: number) {
         scene.visual.fit !== "contain"
       ) {
         fail(`${path}.visual.fit`, "must be cover or contain");
+      }
+      if (
+        scene.visual.cropPreset !== undefined &&
+        !isCropPreset(scene.visual.cropPreset)
+      ) {
+        fail(`${path}.visual.cropPreset`, "must be 16:9, 1:1, 4:5, or 9:16");
       }
       if (
         scene.visual.startFromSeconds !== undefined &&
