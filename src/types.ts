@@ -28,7 +28,13 @@ export type IconRef =
 // These are render-ready assets, normally under public/ and referenced by
 // stable ids from scene visuals or future timeline clips.
 
-export type AssetKind = "image" | "video" | "audio" | "model3d" | "font";
+export type AssetKind =
+  | "image"
+  | "video"
+  | "audio"
+  | "model3d"
+  | "texture"
+  | "font";
 
 export type AssetBase = {
   id: string;
@@ -63,6 +69,12 @@ export type Model3DAsset = AssetBase & {
   format?: "glb" | "gltf" | "obj" | "fbx" | string;
 };
 
+export type TextureAsset = AssetBase & {
+  kind: "texture";
+  width?: number;
+  height?: number;
+};
+
 export type FontAsset = AssetBase & {
   kind: "font";
   family: string;
@@ -73,6 +85,7 @@ export type MediaAsset =
   | VideoAsset
   | AudioAsset
   | Model3DAsset
+  | TextureAsset
   | FontAsset;
 
 export type AssetManifest = {
@@ -129,6 +142,9 @@ export type ThreeSceneConfig = {
   color?: string;
   rotationSpeed?: number;
   cameraZ?: number;
+  modelAssetId?: string;
+  textureAssetId?: string;
+  modelScale?: number;
 };
 
 export type BrollSequenceItem = {

@@ -21,6 +21,10 @@ function isHexColor(value: unknown): value is string {
   return typeof value === "string" && /^#[0-9a-fA-F]{6}$/.test(value);
 }
 
+function assetKindFor(assetId: string) {
+  return content.assets?.assets.find((asset) => asset.id === assetId)?.kind;
+}
+
 function validateSpeedRamp(
   path: string,
   speedRamp: unknown,
@@ -458,6 +462,30 @@ function validateScene(scene: SceneConfig, index: number) {
             scene.visual.scene.cameraZ <= 0)
         ) {
           fail(`${path}.visual.scene.cameraZ`, "must be > 0");
+        }
+        if (scene.visual.scene.modelAssetId !== undefined) {
+          if (!isNonEmptyString(scene.visual.scene.modelAssetId)) {
+            fail(`${path}.visual.scene.modelAssetId`, "must be non-empty when provided");
+          } else if (assetKindFor(scene.visual.scene.modelAssetId) !== "model3d") {
+            fail(`${path}.visual.scene.modelAssetId`, "must reference a model3d asset");
+          }
+        }
+        if (scene.visual.scene.textureAssetId !== undefined) {
+          if (!isNonEmptyString(scene.visual.scene.textureAssetId)) {
+            fail(`${path}.visual.scene.textureAssetId`, "must be non-empty when provided");
+          } else {
+            const kind = assetKindFor(scene.visual.scene.textureAssetId);
+            if (kind !== "texture" && kind !== "image") {
+              fail(`${path}.visual.scene.textureAssetId`, "must reference a texture or image asset");
+            }
+          }
+        }
+        if (
+          scene.visual.scene.modelScale !== undefined &&
+          (!Number.isFinite(scene.visual.scene.modelScale) ||
+            scene.visual.scene.modelScale <= 0)
+        ) {
+          fail(`${path}.visual.scene.modelScale`, "must be > 0");
         }
       }
       if (

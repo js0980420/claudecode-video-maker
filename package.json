@@ -22,6 +22,7 @@
   "devDependencies": {
     "@remotion/eslint-config-flat": "4.0.451",
     "@types/react": "19.2.7",
+    "@types/three": "^0.184.0",
     "@types/web": "0.0.166",
     "eslint": "9.19.0",
     "playwright": "^1.59.1",

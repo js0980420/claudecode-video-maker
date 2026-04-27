@@ -290,7 +290,7 @@ function renderClip(timeline: Timeline, clip: TimelineClip) {
         <Sequence key={clip.id} from={clip.from} durationInFrames={clip.durationInFrames}>
           <VisualClipFrame clip={clip}>
             <AbsoluteFill style={{ alignItems: "center", justifyContent: "center" }}>
-              <ThreeScene scene={clip.scene} />
+              <ThreeScene scene={clip.scene} assets={timeline.assets} />
             </AbsoluteFill>
           </VisualClipFrame>
         </Sequence>

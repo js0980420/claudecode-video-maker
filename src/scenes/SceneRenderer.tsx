@@ -152,6 +152,6 @@ const VisualSlot: React.FC<{
         />
       );
     case "threeScene":
-      return <ThreeScene {...scene.visual} />;
+      return <ThreeScene {...scene.visual} assets={assets} />;
   }
 };

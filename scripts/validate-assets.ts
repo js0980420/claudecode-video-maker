@@ -5,7 +5,14 @@ import { AssetManifest, AssetKind, MediaAsset } from "../src/types";
 
 const errors: string[] = [];
 const manifest = (content as { assets?: AssetManifest }).assets ?? { assets: [] };
-const validKinds = new Set<AssetKind>(["image", "video", "audio", "model3d", "font"]);
+const validKinds = new Set<AssetKind>([
+  "image",
+  "video",
+  "audio",
+  "model3d",
+  "texture",
+  "font",
+]);
 
 function fail(path: string, message: string) {
   errors.push(`${path}: ${message}`);
