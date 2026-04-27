@@ -7,6 +7,7 @@ const steps = [
   ["npm", ["run", "validate:voiceover"]],
   ["npm", ["run", "validate:assets"]],
   ["npm", ["run", "smoke:media-scenes"]],
+  ["npm", ["run", "smoke:3d-scenes"]],
   ["npm", ["run", "lint"]],
   [
     "npx",

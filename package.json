@@ -21,11 +21,13 @@
   },
   "devDependencies": {
     "@remotion/eslint-config-flat": "4.0.451",
+    "@types/pngjs": "^6.0.5",
     "@types/react": "19.2.7",
     "@types/three": "^0.184.0",
     "@types/web": "0.0.166",
     "eslint": "9.19.0",
     "playwright": "^1.59.1",
+    "pngjs": "^7.0.0",
     "prettier": "3.8.1",
     "tsx": "^4.21.0",
     "typescript": "5.9.3"
@@ -47,6 +49,7 @@
     "validate:voiceover": "tsx scripts/validate-voiceover-durations.ts",
     "validate:assets": "tsx scripts/validate-assets.ts",
     "smoke:media-scenes": "tsx scripts/smoke-media-scenes.ts",
+    "smoke:3d-scenes": "tsx scripts/smoke-3d-scenes.ts",
     "prepush:validate": "node scripts/pre-push-validate.mjs",
     "transcript:export": "tsx scripts/export-transcript.ts",
     "publish:threads": "node scripts/publish-threads.mjs",
