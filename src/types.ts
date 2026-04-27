@@ -166,6 +166,7 @@ export type VideoContent = {
     subtitle?: string; // appears next to brand name
     primaryColor: string; // accent color used everywhere (hex)
   };
+  assets?: AssetManifest; // optional render-ready assets referenced by scene ids
   scenes: SceneConfig[]; // any number of scenes
   voiceover: {
     enabled: boolean;

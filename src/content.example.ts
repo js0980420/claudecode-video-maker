@@ -40,6 +40,13 @@ export const content: VideoContent = {
     primaryColor: "#E63946", // change to your brand color
   },
 
+  // Render-ready assets that scenes can reference by stable id.
+  // Put final files under public/ first, e.g. public/videos/demo.mp4,
+  // then reference them as src: "videos/demo.mp4".
+  assets: {
+    assets: [],
+  },
+
   // Add / remove / reorder scenes freely.
   // 場景數量可任意增減、重新排序。
   scenes: [

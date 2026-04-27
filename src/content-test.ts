@@ -17,6 +17,10 @@ export const content: VideoContent = {
     primaryColor: "#FF6B6B",
   },
 
+  assets: {
+    assets: [],
+  },
+
   scenes: [
     {
       id: "scene-01",
