@@ -5,7 +5,8 @@ import { content } from "../src/content";
 const mediaSceneIndex = content.scenes.findIndex(
   (scene) =>
     scene.visual.type === "videoClip" ||
-    scene.visual.type === "imageBackground",
+    scene.visual.type === "imageBackground" ||
+    scene.visual.type === "brollSequence",
 );
 
 if (mediaSceneIndex === -1) {

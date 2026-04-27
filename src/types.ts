@@ -85,6 +85,18 @@ export type AssetManifest = {
 // Use \n for line breaks.
 export type RichText = string;
 
+export type BrollSequenceItem = {
+  assetId: string; // id of an image or video asset from content.assets
+  durationSeconds?: number;
+  fit?: "cover" | "contain";
+  startFromSeconds?: number; // video assets only; ignored for images
+  endAtSeconds?: number; // video assets only; ignored for images
+  playbackRate?: number; // video assets only; default 1
+  volume?: number; // video assets only; 0..1, default 0
+  muted?: boolean; // video assets only; default true
+  caption?: RichText;
+};
+
 // ----- Scene visual templates ----------------------------------
 // Each scene picks one visual template and provides its data.
 // Want a new template? Add a variant here, then handle it in
@@ -141,6 +153,11 @@ export type SceneVisual =
       assetId: string; // id of an image asset from content.assets
       fit?: "cover" | "contain";
       dim?: number; // 0..0.8 overlay opacity
+    }
+  | {
+      type: "brollSequence";
+      items: BrollSequenceItem[];
+      fit?: "cover" | "contain"; // default for items
     };
 
 export type SceneConfig = {

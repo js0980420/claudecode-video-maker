@@ -16,6 +16,7 @@ import { ChatBox } from "./templates/ChatBox";
 import { PhoneCTA } from "./templates/PhoneCTA";
 import { VideoClip } from "./templates/VideoClip";
 import { ImageBackground } from "./templates/ImageBackground";
+import { BrollSequence } from "./templates/BrollSequence";
 
 type Props = {
   scene: SceneConfig;
@@ -88,6 +89,7 @@ export const SceneRenderer: React.FC<Props> = ({
           scene={scene}
           accentColor={brand.primaryColor}
           assets={assets}
+          sceneDuration={sceneDuration}
         />
 
         {scene.description ? (
@@ -111,7 +113,8 @@ const VisualSlot: React.FC<{
   scene: SceneConfig;
   accentColor: string;
   assets?: VideoContent["assets"];
-}> = ({ scene, accentColor, assets }) => {
+  sceneDuration: number;
+}> = ({ scene, accentColor, assets, sceneDuration }) => {
   switch (scene.visual.type) {
     case "centerText":
       return null;
@@ -129,5 +132,14 @@ const VisualSlot: React.FC<{
       return <VideoClip {...scene.visual} assets={assets} />;
     case "imageBackground":
       return <ImageBackground {...scene.visual} assets={assets} />;
+    case "brollSequence":
+      return (
+        <BrollSequence
+          {...scene.visual}
+          assets={assets}
+          accentColor={accentColor}
+          sceneDuration={sceneDuration}
+        />
+      );
   }
 };

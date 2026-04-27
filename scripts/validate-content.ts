@@ -166,6 +166,78 @@ function validateScene(scene: SceneConfig, index: number) {
         fail(`${path}.visual.dim`, "must be between 0 and 0.8");
       }
       break;
+    case "brollSequence":
+      if (!Array.isArray(scene.visual.items) || scene.visual.items.length === 0) {
+        fail(`${path}.visual.items`, "must be a non-empty array");
+      } else {
+        scene.visual.items.forEach((item, i) => {
+          const itemPath = `${path}.visual.items[${i}]`;
+          if (!isNonEmptyString(item.assetId)) {
+            fail(`${itemPath}.assetId`, "must be a non-empty asset id");
+          }
+          if (
+            item.fit !== undefined &&
+            item.fit !== "cover" &&
+            item.fit !== "contain"
+          ) {
+            fail(`${itemPath}.fit`, "must be cover or contain");
+          }
+          if (
+            item.durationSeconds !== undefined &&
+            !isPositiveNumber(item.durationSeconds)
+          ) {
+            fail(`${itemPath}.durationSeconds`, "must be a positive number when provided");
+          }
+          if (
+            item.startFromSeconds !== undefined &&
+            item.startFromSeconds < 0
+          ) {
+            fail(`${itemPath}.startFromSeconds`, "must be >= 0");
+          }
+          if (
+            item.endAtSeconds !== undefined &&
+            item.endAtSeconds <= 0
+          ) {
+            fail(`${itemPath}.endAtSeconds`, "must be > 0");
+          }
+          if (
+            item.startFromSeconds !== undefined &&
+            item.endAtSeconds !== undefined &&
+            item.endAtSeconds <= item.startFromSeconds
+          ) {
+            fail(`${itemPath}.endAtSeconds`, "must be greater than startFromSeconds");
+          }
+          if (
+            item.playbackRate !== undefined &&
+            item.playbackRate <= 0
+          ) {
+            fail(`${itemPath}.playbackRate`, "must be > 0");
+          }
+          if (
+            item.volume !== undefined &&
+            (item.volume < 0 || item.volume > 1)
+          ) {
+            fail(`${itemPath}.volume`, "must be between 0 and 1");
+          }
+          if (
+            item.muted !== undefined &&
+            typeof item.muted !== "boolean"
+          ) {
+            fail(`${itemPath}.muted`, "must be boolean");
+          }
+          if (item.caption !== undefined && !isNonEmptyString(item.caption)) {
+            fail(`${itemPath}.caption`, "must be a non-empty string when provided");
+          }
+        });
+      }
+      if (
+        scene.visual.fit !== undefined &&
+        scene.visual.fit !== "cover" &&
+        scene.visual.fit !== "contain"
+      ) {
+        fail(`${path}.visual.fit`, "must be cover or contain");
+      }
+      break;
   }
 }
 
