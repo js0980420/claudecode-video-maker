@@ -55,7 +55,7 @@ export const TutorialComposition: React.FC<TutorialCompositionProps> = ({
       {/* BGM 鋪底,整段迴圈 */}
       <Audio src={staticFile("music/bgm.mp3")} loop volume={0.2} />
 
-      <Sequence from={0} durationInFrames={introDur}>
+      <Sequence durationInFrames={introDur}>
         <IntroScene
           accentColor={ACCENT_COLOR}
           titleAccent={TUTORIAL_CONFIG.intro.titleAccent}
