@@ -6,7 +6,8 @@ const mediaSceneIndex = content.scenes.findIndex(
   (scene) =>
     scene.visual.type === "videoClip" ||
     scene.visual.type === "imageBackground" ||
-    scene.visual.type === "brollSequence",
+    scene.visual.type === "brollSequence" ||
+    scene.visual.type === "talkingHead",
 );
 
 if (mediaSceneIndex === -1) {

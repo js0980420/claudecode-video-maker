@@ -97,6 +97,8 @@ export type BrollSequenceItem = {
   caption?: RichText;
 };
 
+export type TalkingHeadLayout = "full" | "split" | "pictureInPicture";
+
 // ----- Scene visual templates ----------------------------------
 // Each scene picks one visual template and provides its data.
 // Want a new template? Add a variant here, then handle it in
@@ -158,6 +160,20 @@ export type SceneVisual =
       type: "brollSequence";
       items: BrollSequenceItem[];
       fit?: "cover" | "contain"; // default for items
+    }
+  | {
+      type: "talkingHead";
+      speakerAssetId: string; // id of a video asset from content.assets
+      supportingAssetId?: string; // optional image or video asset from content.assets
+      layout?: TalkingHeadLayout;
+      fit?: "cover" | "contain";
+      startFromSeconds?: number;
+      endAtSeconds?: number;
+      playbackRate?: number;
+      volume?: number;
+      muted?: boolean;
+      speakerName?: string;
+      speakerRole?: string;
     };
 
 export type SceneConfig = {

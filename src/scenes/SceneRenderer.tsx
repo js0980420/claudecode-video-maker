@@ -17,6 +17,7 @@ import { PhoneCTA } from "./templates/PhoneCTA";
 import { VideoClip } from "./templates/VideoClip";
 import { ImageBackground } from "./templates/ImageBackground";
 import { BrollSequence } from "./templates/BrollSequence";
+import { TalkingHead } from "./templates/TalkingHead";
 
 type Props = {
   scene: SceneConfig;
@@ -139,6 +140,14 @@ const VisualSlot: React.FC<{
           assets={assets}
           accentColor={accentColor}
           sceneDuration={sceneDuration}
+        />
+      );
+    case "talkingHead":
+      return (
+        <TalkingHead
+          {...scene.visual}
+          assets={assets}
+          accentColor={accentColor}
         />
       );
   }

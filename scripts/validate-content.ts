@@ -238,6 +238,81 @@ function validateScene(scene: SceneConfig, index: number) {
         fail(`${path}.visual.fit`, "must be cover or contain");
       }
       break;
+    case "talkingHead":
+      if (!isNonEmptyString(scene.visual.speakerAssetId)) {
+        fail(`${path}.visual.speakerAssetId`, "must be a non-empty video asset id");
+      }
+      if (
+        scene.visual.supportingAssetId !== undefined &&
+        !isNonEmptyString(scene.visual.supportingAssetId)
+      ) {
+        fail(`${path}.visual.supportingAssetId`, "must be non-empty when provided");
+      }
+      if (
+        scene.visual.layout !== undefined &&
+        scene.visual.layout !== "full" &&
+        scene.visual.layout !== "split" &&
+        scene.visual.layout !== "pictureInPicture"
+      ) {
+        fail(`${path}.visual.layout`, "must be full, split, or pictureInPicture");
+      }
+      if (
+        scene.visual.fit !== undefined &&
+        scene.visual.fit !== "cover" &&
+        scene.visual.fit !== "contain"
+      ) {
+        fail(`${path}.visual.fit`, "must be cover or contain");
+      }
+      if (
+        scene.visual.startFromSeconds !== undefined &&
+        scene.visual.startFromSeconds < 0
+      ) {
+        fail(`${path}.visual.startFromSeconds`, "must be >= 0");
+      }
+      if (
+        scene.visual.endAtSeconds !== undefined &&
+        scene.visual.endAtSeconds <= 0
+      ) {
+        fail(`${path}.visual.endAtSeconds`, "must be > 0");
+      }
+      if (
+        scene.visual.startFromSeconds !== undefined &&
+        scene.visual.endAtSeconds !== undefined &&
+        scene.visual.endAtSeconds <= scene.visual.startFromSeconds
+      ) {
+        fail(`${path}.visual.endAtSeconds`, "must be greater than startFromSeconds");
+      }
+      if (
+        scene.visual.playbackRate !== undefined &&
+        scene.visual.playbackRate <= 0
+      ) {
+        fail(`${path}.visual.playbackRate`, "must be > 0");
+      }
+      if (
+        scene.visual.volume !== undefined &&
+        (scene.visual.volume < 0 || scene.visual.volume > 1)
+      ) {
+        fail(`${path}.visual.volume`, "must be between 0 and 1");
+      }
+      if (
+        scene.visual.muted !== undefined &&
+        typeof scene.visual.muted !== "boolean"
+      ) {
+        fail(`${path}.visual.muted`, "must be boolean");
+      }
+      if (
+        scene.visual.speakerName !== undefined &&
+        !isNonEmptyString(scene.visual.speakerName)
+      ) {
+        fail(`${path}.visual.speakerName`, "must be a non-empty string when provided");
+      }
+      if (
+        scene.visual.speakerRole !== undefined &&
+        !isNonEmptyString(scene.visual.speakerRole)
+      ) {
+        fail(`${path}.visual.speakerRole`, "must be a non-empty string when provided");
+      }
+      break;
   }
 }
 
