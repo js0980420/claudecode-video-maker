@@ -1,10 +1,9 @@
 import React from "react";
-import { staticFile, useVideoConfig } from "remotion";
-import { Video } from "@remotion/media";
-import { AssetManifest } from "../../types";
+import { AssetManifest, SpeedRampSegment } from "../../types";
 import { findAsset } from "../../utils/assets";
 import { dimensionsForCropPreset } from "../../utils/cropPresets";
 import { BLACK, GRAY, WHITE } from "../../constants";
+import { SpeedRampedVideo } from "./SpeedRampedVideo";
 
 const MISSING_COLOR = "#E63946";
 
@@ -16,6 +15,7 @@ export const VideoClip: React.FC<{
   startFromSeconds?: number;
   endAtSeconds?: number;
   playbackRate?: number;
+  speedRamp?: SpeedRampSegment[];
   volume?: number;
   muted?: boolean;
 }> = ({
@@ -26,10 +26,10 @@ export const VideoClip: React.FC<{
   startFromSeconds = 0,
   endAtSeconds,
   playbackRate = 1,
+  speedRamp,
   volume = 0,
   muted = true,
 }) => {
-  const { fps } = useVideoConfig();
   const frameSize = dimensionsForCropPreset(980, 420, cropPreset);
   const asset = findAsset(assets, assetId, "video");
   if (!asset) {
@@ -70,23 +70,15 @@ export const VideoClip: React.FC<{
         boxShadow: "0 24px 80px rgba(0,0,0,0.18)",
       }}
     >
-      <Video
-        src={staticFile(asset.src)}
+      <SpeedRampedVideo
+        src={asset.src}
         muted={muted}
-        objectFit={fit}
+        fit={fit}
         playbackRate={playbackRate}
-        trimBefore={Math.max(0, Math.floor(startFromSeconds * fps))}
-        trimAfter={
-          endAtSeconds === undefined
-            ? undefined
-            : Math.max(0, Math.floor(endAtSeconds * fps))
-        }
-        volume={() => (muted ? 0 : volume)}
-        style={{
-          width: "100%",
-          height: "100%",
-          display: "block",
-        }}
+        speedRamp={speedRamp}
+        startFromSeconds={startFromSeconds}
+        endAtSeconds={endAtSeconds}
+        volume={volume}
       />
       <div
         style={{

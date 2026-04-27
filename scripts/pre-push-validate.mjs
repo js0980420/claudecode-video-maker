@@ -16,6 +16,7 @@ const steps = [
       "src/tutorial/steps-data.test.ts",
       "src/timeline/subtitles.test.ts",
       "src/utils/cropPresets.test.ts",
+      "src/utils/speedRamp.test.ts",
     ],
   ],
 ];

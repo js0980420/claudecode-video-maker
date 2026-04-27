@@ -1,10 +1,15 @@
 import React from "react";
-import { AbsoluteFill, Img, staticFile, useVideoConfig } from "remotion";
-import { Video } from "@remotion/media";
-import { AssetManifest, MediaAsset, TalkingHeadLayout } from "../../types";
+import { AbsoluteFill, Img, staticFile } from "remotion";
+import {
+  AssetManifest,
+  MediaAsset,
+  SpeedRampSegment,
+  TalkingHeadLayout,
+} from "../../types";
 import { findAsset } from "../../utils/assets";
 import { dimensionsForCropPreset } from "../../utils/cropPresets";
 import { BLACK, WHITE } from "../../constants";
+import { SpeedRampedVideo } from "./SpeedRampedVideo";
 
 const MISSING_COLOR = "#E63946";
 
@@ -38,6 +43,7 @@ const MediaPane: React.FC<{
   startFromSeconds?: number;
   endAtSeconds?: number;
   playbackRate?: number;
+  speedRamp?: SpeedRampSegment[];
   volume?: number;
   muted?: boolean;
 }> = ({
@@ -48,10 +54,10 @@ const MediaPane: React.FC<{
   startFromSeconds = 0,
   endAtSeconds,
   playbackRate = 1,
+  speedRamp,
   volume = 0,
   muted = true,
 }) => {
-  const { fps } = useVideoConfig();
   if (!asset || (asset.kind !== "video" && asset.kind !== "image")) {
     return <MissingAsset assetId={assetId} label={label} />;
   }
@@ -71,19 +77,15 @@ const MediaPane: React.FC<{
   }
 
   return (
-    <Video
-      src={staticFile(asset.src)}
+    <SpeedRampedVideo
+      src={asset.src}
       muted={muted}
-      objectFit={fit}
+      fit={fit}
       playbackRate={playbackRate}
-      trimBefore={Math.max(0, Math.floor(startFromSeconds * fps))}
-      trimAfter={
-        endAtSeconds === undefined
-          ? undefined
-          : Math.max(0, Math.floor(endAtSeconds * fps))
-      }
-      volume={() => (muted ? 0 : volume)}
-      style={{ width: "100%", height: "100%", display: "block" }}
+      speedRamp={speedRamp}
+      startFromSeconds={startFromSeconds}
+      endAtSeconds={endAtSeconds}
+      volume={volume}
     />
   );
 };
@@ -99,6 +101,7 @@ export const TalkingHead: React.FC<{
   startFromSeconds?: number;
   endAtSeconds?: number;
   playbackRate?: number;
+  speedRamp?: SpeedRampSegment[];
   volume?: number;
   muted?: boolean;
   speakerName?: string;
@@ -114,6 +117,7 @@ export const TalkingHead: React.FC<{
   startFromSeconds,
   endAtSeconds,
   playbackRate,
+  speedRamp,
   volume,
   muted,
   speakerName,
@@ -147,6 +151,7 @@ export const TalkingHead: React.FC<{
               startFromSeconds={startFromSeconds}
               endAtSeconds={endAtSeconds}
               playbackRate={playbackRate}
+              speedRamp={speedRamp}
               volume={volume}
               muted={muted}
             />
@@ -178,6 +183,7 @@ export const TalkingHead: React.FC<{
             startFromSeconds={startFromSeconds}
             endAtSeconds={endAtSeconds}
             playbackRate={playbackRate}
+            speedRamp={speedRamp}
             volume={volume}
             muted={muted}
           />

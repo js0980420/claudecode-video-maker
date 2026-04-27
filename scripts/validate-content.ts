@@ -20,6 +20,43 @@ function isHexColor(value: unknown): value is string {
   return typeof value === "string" && /^#[0-9a-fA-F]{6}$/.test(value);
 }
 
+function validateSpeedRamp(
+  path: string,
+  speedRamp: unknown,
+  options: { hasPlaybackRate?: boolean; hasEndAtSeconds?: boolean } = {},
+) {
+  if (speedRamp === undefined) return;
+  if (!Array.isArray(speedRamp) || speedRamp.length === 0) {
+    fail(path, "must be a non-empty array when provided");
+    return;
+  }
+  if (options.hasPlaybackRate) {
+    fail(path, "cannot be combined with playbackRate");
+  }
+  if (options.hasEndAtSeconds) {
+    fail(path, "cannot be combined with endAtSeconds");
+  }
+  speedRamp.forEach((segment, i) => {
+    const segmentPath = `${path}[${i}]`;
+    if (
+      typeof segment !== "object" ||
+      segment === null ||
+      !("durationSeconds" in segment) ||
+      !isPositiveNumber((segment as { durationSeconds?: unknown }).durationSeconds)
+    ) {
+      fail(`${segmentPath}.durationSeconds`, "must be a positive number");
+    }
+    if (
+      typeof segment !== "object" ||
+      segment === null ||
+      !("playbackRate" in segment) ||
+      !isPositiveNumber((segment as { playbackRate?: unknown }).playbackRate)
+    ) {
+      fail(`${segmentPath}.playbackRate`, "must be a positive number");
+    }
+  });
+}
+
 function validateThumbnail(path: string, thumbnail: ThumbnailContent) {
   if (!Array.isArray(thumbnail.titleParts) || thumbnail.titleParts.length !== 3) {
     fail(`${path}.titleParts`, "must contain exactly three strings");
@@ -142,6 +179,10 @@ function validateScene(scene: SceneConfig, index: number) {
       ) {
         fail(`${path}.visual.playbackRate`, "must be > 0");
       }
+      validateSpeedRamp(`${path}.visual.speedRamp`, scene.visual.speedRamp, {
+        hasPlaybackRate: scene.visual.playbackRate !== undefined,
+        hasEndAtSeconds: scene.visual.endAtSeconds !== undefined,
+      });
       if (
         scene.visual.volume !== undefined &&
         (scene.visual.volume < 0 || scene.visual.volume > 1)
@@ -226,6 +267,10 @@ function validateScene(scene: SceneConfig, index: number) {
           ) {
             fail(`${itemPath}.playbackRate`, "must be > 0");
           }
+          validateSpeedRamp(`${itemPath}.speedRamp`, item.speedRamp, {
+            hasPlaybackRate: item.playbackRate !== undefined,
+            hasEndAtSeconds: item.endAtSeconds !== undefined,
+          });
           if (
             item.volume !== undefined &&
             (item.volume < 0 || item.volume > 1)
@@ -313,6 +358,10 @@ function validateScene(scene: SceneConfig, index: number) {
       ) {
         fail(`${path}.visual.playbackRate`, "must be > 0");
       }
+      validateSpeedRamp(`${path}.visual.speedRamp`, scene.visual.speedRamp, {
+        hasPlaybackRate: scene.visual.playbackRate !== undefined,
+        hasEndAtSeconds: scene.visual.endAtSeconds !== undefined,
+      });
       if (
         scene.visual.volume !== undefined &&
         (scene.visual.volume < 0 || scene.visual.volume > 1)

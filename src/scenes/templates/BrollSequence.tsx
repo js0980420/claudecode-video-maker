@@ -1,11 +1,12 @@
 import React from "react";
 import { AbsoluteFill, Img, Sequence, staticFile, useVideoConfig } from "remotion";
-import { Video } from "@remotion/media";
 import { AssetManifest, BrollSequenceItem, MediaAsset } from "../../types";
 import { findAsset } from "../../utils/assets";
 import { dimensionsForCropPreset } from "../../utils/cropPresets";
+import { speedRampDurationSeconds } from "../../utils/speedRamp";
 import { parseHighlights } from "../../utils/parseHighlights";
 import { BLACK, WHITE } from "../../constants";
+import { SpeedRampedVideo } from "./SpeedRampedVideo";
 
 const MISSING_COLOR = "#E63946";
 const WIDTH = 1100;
@@ -17,6 +18,9 @@ function durationForItem(
 ): number | null {
   if (item.durationSeconds !== undefined) {
     return Math.ceil(item.durationSeconds * fps);
+  }
+  if (item.speedRamp && item.speedRamp.length > 0) {
+    return Math.ceil(speedRampDurationSeconds(item.speedRamp) * fps);
   }
   if (
     item.startFromSeconds !== undefined &&
@@ -73,7 +77,6 @@ const BrollAssetFrame: React.FC<{
   fit: "cover" | "contain";
   accentColor: string;
 }> = ({ item, asset, fit, accentColor }) => {
-  const { fps } = useVideoConfig();
   if (!asset || (asset.kind !== "image" && asset.kind !== "video")) {
     return <MissingAsset assetId={item.assetId} />;
   }
@@ -81,19 +84,15 @@ const BrollAssetFrame: React.FC<{
   return (
     <AbsoluteFill style={{ background: BLACK }}>
       {asset.kind === "video" ? (
-        <Video
-          src={staticFile(asset.src)}
+        <SpeedRampedVideo
+          src={asset.src}
           muted={item.muted ?? true}
-          objectFit={item.fit ?? fit}
+          fit={item.fit ?? fit}
           playbackRate={item.playbackRate ?? 1}
-          trimBefore={Math.max(0, Math.floor((item.startFromSeconds ?? 0) * fps))}
-          trimAfter={
-            item.endAtSeconds === undefined
-              ? undefined
-              : Math.max(0, Math.floor(item.endAtSeconds * fps))
-          }
-          volume={() => ((item.muted ?? true) ? 0 : (item.volume ?? 0))}
-          style={{ width: "100%", height: "100%", display: "block" }}
+          speedRamp={item.speedRamp}
+          startFromSeconds={item.startFromSeconds}
+          endAtSeconds={item.endAtSeconds}
+          volume={item.volume}
         />
       ) : (
         <Img

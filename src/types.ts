@@ -87,6 +87,11 @@ export type RichText = string;
 
 export type CropPreset = "16:9" | "1:1" | "4:5" | "9:16";
 
+export type SpeedRampSegment = {
+  durationSeconds: number; // output duration for this segment
+  playbackRate: number; // source speed during this segment
+};
+
 export type BrollSequenceItem = {
   assetId: string; // id of an image or video asset from content.assets
   durationSeconds?: number;
@@ -94,6 +99,7 @@ export type BrollSequenceItem = {
   startFromSeconds?: number; // video assets only; ignored for images
   endAtSeconds?: number; // video assets only; ignored for images
   playbackRate?: number; // video assets only; default 1
+  speedRamp?: SpeedRampSegment[]; // video assets only; mutually exclusive with playbackRate/endAtSeconds
   volume?: number; // video assets only; 0..1, default 0
   muted?: boolean; // video assets only; default true
   caption?: RichText;
@@ -150,6 +156,7 @@ export type SceneVisual =
       startFromSeconds?: number;
       endAtSeconds?: number;
       playbackRate?: number;
+      speedRamp?: SpeedRampSegment[];
       volume?: number; // 0..1, default 0
       muted?: boolean; // default true
     }
@@ -176,6 +183,7 @@ export type SceneVisual =
       startFromSeconds?: number;
       endAtSeconds?: number;
       playbackRate?: number;
+      speedRamp?: SpeedRampSegment[];
       volume?: number;
       muted?: boolean;
       speakerName?: string;
