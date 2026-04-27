@@ -27,6 +27,11 @@ import {
   TutorialThumbnailReel,
 } from "./tutorial/TutorialThumbnails";
 import { VideoContent } from "./types";
+import {
+  TimelineComposition,
+  TimelineCompositionProps,
+} from "./timeline/TimelineComposition";
+import { compileShortFormTimeline } from "./timeline/compileShortForm";
 
 const durations = durationsJson as Record<string, number>;
 
@@ -59,9 +64,24 @@ const createComposition = (content: VideoContent) => {
 export const RemotionRoot: React.FC = () => {
   const main = createComposition(mainContent);
   const test = createComposition(testContent);
+  const mainTimeline = compileShortFormTimeline(
+    mainContent,
+    main.SCENE_DURATIONS_FRAMES,
+  );
+  const testTimeline = compileShortFormTimeline(
+    testContent,
+    test.SCENE_DURATIONS_FRAMES,
+  );
   const tutorialData = parseTutorialData(TUTORIAL_STEPS_JSON);
   const tutorialDurationFrames = calcTutorialDurationFrames(tutorialData);
   const tutorialId = TUTORIAL_CONFIG.videoName; // Remotion composition id
+
+  const calculateTimelineMetadata: CalculateMetadataFunction<
+    TimelineCompositionProps
+  > = ({ props }) => ({
+    durationInFrames: props.timeline.durationInFrames,
+    props,
+  });
 
   return (
     <>
@@ -93,6 +113,29 @@ export const RemotionRoot: React.FC = () => {
           sceneDurationsFrames: test.SCENE_DURATIONS_FRAMES,
         }}
         calculateMetadata={test.calculateMetadata}
+      />
+
+      {/* Timeline-compiled short-form compositions (parallel path for the asset editing roadmap) */}
+      <Composition
+        id={`${mainContent.meta.videoName}-timeline`}
+        component={TimelineComposition}
+        durationInFrames={mainTimeline.durationInFrames}
+        fps={mainTimeline.fps}
+        width={mainTimeline.width}
+        height={mainTimeline.height}
+        defaultProps={{ timeline: mainTimeline }}
+        calculateMetadata={calculateTimelineMetadata}
+      />
+
+      <Composition
+        id={`${testContent.meta.videoName}-timeline`}
+        component={TimelineComposition}
+        durationInFrames={testTimeline.durationInFrames}
+        fps={testTimeline.fps}
+        width={testTimeline.width}
+        height={testTimeline.height}
+        defaultProps={{ timeline: testTimeline }}
+        calculateMetadata={calculateTimelineMetadata}
       />
 
       {/* Tutorial prototype(階段 1 — 純截圖輪播) */}
