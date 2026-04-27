@@ -38,6 +38,7 @@
     "render:tutorial": "node scripts/render-tutorial.mjs",
     "validate:bootstrap": "node scripts/validate-bootstrap.mjs",
     "validate:content": "tsx scripts/validate-content.ts",
+    "validate:tutorial": "tsx scripts/validate-tutorial.ts",
     "publish:threads": "node scripts/publish-threads.mjs",
     "archive": "node scripts/archive.mjs",
     "upgrade": "remotion upgrade",
