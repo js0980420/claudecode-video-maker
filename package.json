@@ -50,6 +50,7 @@
     "validate:assets": "tsx scripts/validate-assets.ts",
     "smoke:media-scenes": "tsx scripts/smoke-media-scenes.ts",
     "smoke:3d-scenes": "tsx scripts/smoke-3d-scenes.ts",
+    "smoke:frame-fit": "tsx scripts/smoke-frame-fit.ts",
     "prepush:validate": "node scripts/pre-push-validate.mjs",
     "transcript:export": "tsx scripts/export-transcript.ts",
     "publish:threads": "node scripts/publish-threads.mjs",
@@ -60,5 +61,8 @@
   },
   "sideEffects": [
     "*.css"
-  ]
+  ],
+  "optionalDependencies": {
+    "@tailwindcss/oxide-linux-x64-gnu": "4.2.0"
+  }
 }
