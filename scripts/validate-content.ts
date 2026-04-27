@@ -1,6 +1,10 @@
 import { content } from "../src/content";
 import { SceneConfig, ThumbnailContent } from "../src/types";
 import { isCropPreset } from "../src/utils/cropPresets";
+import {
+  isThreeEnvironmentPreset,
+  isThreeLightingPreset,
+} from "../src/utils/threePresets";
 
 const errors: string[] = [];
 const validMarkerKinds = new Set(["beat", "cut", "emphasis", "caption", "custom"]);
@@ -507,6 +511,24 @@ function validateScene(scene: SceneConfig, index: number) {
               fail(`${path}.visual.scene.cameraAnimation.speed`, "must be finite");
             }
           }
+        }
+        if (
+          scene.visual.scene.lightingPreset !== undefined &&
+          !isThreeLightingPreset(scene.visual.scene.lightingPreset)
+        ) {
+          fail(
+            `${path}.visual.scene.lightingPreset`,
+            "must be studio, soft, dramatic, or product",
+          );
+        }
+        if (
+          scene.visual.scene.environmentPreset !== undefined &&
+          !isThreeEnvironmentPreset(scene.visual.scene.environmentPreset)
+        ) {
+          fail(
+            `${path}.visual.scene.environmentPreset`,
+            "must be dark, warm, cool, or white",
+          );
         }
         if (scene.visual.scene.modelAssetId !== undefined) {
           if (!isNonEmptyString(scene.visual.scene.modelAssetId)) {

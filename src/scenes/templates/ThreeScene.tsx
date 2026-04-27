@@ -8,12 +8,51 @@ import { CropPreset, ThreeSceneConfig, VideoContent } from "../../types";
 import { dimensionsForCropPreset } from "../../utils/cropPresets";
 import { findAsset } from "../../utils/assets";
 import { cameraPositionForFrame } from "../../utils/threeCamera";
+import { backgroundForEnvironmentPreset } from "../../utils/threePresets";
 import { BLACK } from "../../constants";
 import { staticFile } from "remotion";
 
 const MAX_WIDTH = 980;
 const MAX_HEIGHT = 520;
 const MISSING_COLOR = "#E63946";
+
+const LightRig: React.FC<{ preset?: ThreeSceneConfig["lightingPreset"] }> = ({
+  preset = "studio",
+}) => {
+  if (preset === "soft") {
+    return (
+      <>
+        <ambientLight intensity={0.7} />
+        <directionalLight position={[3, 5, 4]} intensity={0.55} />
+      </>
+    );
+  }
+  if (preset === "dramatic") {
+    return (
+      <>
+        <ambientLight intensity={0.18} />
+        <directionalLight position={[5, 5, 2]} intensity={1.35} />
+        <pointLight position={[-4, -2, 3]} intensity={0.7} color="#7FB3FF" />
+      </>
+    );
+  }
+  if (preset === "product") {
+    return (
+      <>
+        <ambientLight intensity={0.5} />
+        <directionalLight position={[0, 6, 5]} intensity={1.15} />
+        <directionalLight position={[-5, 3, 2]} intensity={0.45} />
+      </>
+    );
+  }
+  return (
+    <>
+      <ambientLight intensity={0.45} />
+      <directionalLight position={[4, 5, 5]} intensity={1.1} />
+      <pointLight position={[-3, -2, 4]} intensity={0.6} />
+    </>
+  );
+};
 
 const PrimitiveGeometry: React.FC<{ primitive: NonNullable<ThreeSceneConfig["primitive"]> }> = ({
   primitive,
@@ -87,6 +126,7 @@ export const ThreeScene: React.FC<{
     frame,
     cameraZ,
   );
+  const background = backgroundForEnvironmentPreset(scene?.environmentPreset);
   const modelAsset = scene?.modelAssetId
     ? findAsset(assets, scene.modelAssetId, "model3d")
     : null;
@@ -160,9 +200,8 @@ export const ThreeScene: React.FC<{
         height={frameSize.height}
         camera={{ position: cameraPosition, fov: 45 }}
       >
-        <ambientLight intensity={0.45} />
-        <directionalLight position={[4, 5, 5]} intensity={1.1} />
-        <pointLight position={[-3, -2, 4]} intensity={0.6} />
+        <color attach="background" args={[background]} />
+        <LightRig preset={scene?.lightingPreset} />
         {modelAsset ? (
           <ModelObject
             modelUrl={staticFile(modelAsset.src)}

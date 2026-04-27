@@ -136,6 +136,8 @@ export type TimingMarker = {
 };
 
 export type ThreeScenePrimitive = "box" | "sphere" | "torus";
+export type ThreeLightingPreset = "studio" | "soft" | "dramatic" | "product";
+export type ThreeEnvironmentPreset = "dark" | "warm" | "cool" | "white";
 
 export type ThreeCameraAnimation =
   | { type: "static" }
@@ -153,6 +155,8 @@ export type ThreeSceneConfig = {
   rotationSpeed?: number;
   cameraZ?: number;
   cameraAnimation?: ThreeCameraAnimation;
+  lightingPreset?: ThreeLightingPreset;
+  environmentPreset?: ThreeEnvironmentPreset;
   modelAssetId?: string;
   textureAssetId?: string;
   modelScale?: number;

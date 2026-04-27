@@ -20,6 +20,7 @@ const steps = [
       "src/utils/cropPresets.test.ts",
       "src/utils/speedRamp.test.ts",
       "src/utils/threeCamera.test.ts",
+      "src/utils/threePresets.test.ts",
       "src/utils/timingMarkers.test.ts",
     ],
   ],
