@@ -2,11 +2,16 @@ import React from "react";
 import { AbsoluteFill, Img, staticFile } from "remotion";
 import {
   AssetManifest,
+  ColorAdjustment,
   MediaAsset,
   SpeedRampSegment,
   TalkingHeadLayout,
 } from "../../types";
 import { findAsset } from "../../utils/assets";
+import {
+  colorAdjustmentFilter,
+  vignetteBackground,
+} from "../../utils/colorAdjustments";
 import { dimensionsForCropPreset } from "../../utils/cropPresets";
 import { BLACK, WHITE } from "../../constants";
 import { SpeedRampedVideo } from "./SpeedRampedVideo";
@@ -46,6 +51,7 @@ const MediaPane: React.FC<{
   speedRamp?: SpeedRampSegment[];
   volume?: number;
   muted?: boolean;
+  colorAdjustment?: ColorAdjustment;
 }> = ({
   asset,
   assetId,
@@ -57,36 +63,64 @@ const MediaPane: React.FC<{
   speedRamp,
   volume = 0,
   muted = true,
+  colorAdjustment,
 }) => {
+  const vignette = vignetteBackground(colorAdjustment);
   if (!asset || (asset.kind !== "video" && asset.kind !== "image")) {
     return <MissingAsset assetId={assetId} label={label} />;
   }
 
   if (asset.kind === "image") {
     return (
-      <Img
-        src={staticFile(asset.src)}
-        style={{
-          width: "100%",
-          height: "100%",
-          objectFit: fit,
-          display: "block",
-        }}
-      />
+      <>
+        <Img
+          src={staticFile(asset.src)}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: fit,
+            display: "block",
+            filter: colorAdjustmentFilter(colorAdjustment),
+          }}
+        />
+        {vignette ? (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: vignette,
+              pointerEvents: "none",
+            }}
+          />
+        ) : null}
+      </>
     );
   }
 
   return (
-    <SpeedRampedVideo
-      src={asset.src}
-      muted={muted}
-      fit={fit}
-      playbackRate={playbackRate}
-      speedRamp={speedRamp}
-      startFromSeconds={startFromSeconds}
-      endAtSeconds={endAtSeconds}
-      volume={volume}
-    />
+    <>
+      <SpeedRampedVideo
+        src={asset.src}
+        muted={muted}
+        fit={fit}
+        playbackRate={playbackRate}
+        speedRamp={speedRamp}
+        startFromSeconds={startFromSeconds}
+        endAtSeconds={endAtSeconds}
+        volume={volume}
+        colorAdjustment={colorAdjustment}
+      />
+      {vignette ? (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: vignette,
+            pointerEvents: "none",
+          }}
+        />
+      ) : null}
+    </>
   );
 };
 
@@ -104,6 +138,7 @@ export const TalkingHead: React.FC<{
   speedRamp?: SpeedRampSegment[];
   volume?: number;
   muted?: boolean;
+  colorAdjustment?: ColorAdjustment;
   speakerName?: string;
   speakerRole?: string;
 }> = ({
@@ -120,6 +155,7 @@ export const TalkingHead: React.FC<{
   speedRamp,
   volume,
   muted,
+  colorAdjustment,
   speakerName,
   speakerRole,
 }) => {
@@ -154,6 +190,7 @@ export const TalkingHead: React.FC<{
               speedRamp={speedRamp}
               volume={volume}
               muted={muted}
+              colorAdjustment={colorAdjustment}
             />
           </div>
           <div
@@ -169,6 +206,7 @@ export const TalkingHead: React.FC<{
               assetId={supportingAssetId ?? ""}
               fit={fit}
               label="MISSING SUPPORTING ASSET"
+              colorAdjustment={colorAdjustment}
               muted
             />
           </div>
@@ -186,6 +224,7 @@ export const TalkingHead: React.FC<{
             speedRamp={speedRamp}
             volume={volume}
             muted={muted}
+            colorAdjustment={colorAdjustment}
           />
           {resolvedLayout === "pictureInPicture" && supportingAssetId ? (
             <div
@@ -206,6 +245,7 @@ export const TalkingHead: React.FC<{
                 assetId={supportingAssetId}
                 fit={fit}
                 label="MISSING SUPPORTING ASSET"
+                colorAdjustment={colorAdjustment}
                 muted
               />
             </div>

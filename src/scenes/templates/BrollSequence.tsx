@@ -1,7 +1,16 @@
 import React from "react";
 import { AbsoluteFill, Img, Sequence, staticFile, useVideoConfig } from "remotion";
-import { AssetManifest, BrollSequenceItem, MediaAsset } from "../../types";
+import {
+  AssetManifest,
+  BrollSequenceItem,
+  ColorAdjustment,
+  MediaAsset,
+} from "../../types";
 import { findAsset } from "../../utils/assets";
+import {
+  colorAdjustmentFilter,
+  vignetteBackground,
+} from "../../utils/colorAdjustments";
 import { dimensionsForCropPreset } from "../../utils/cropPresets";
 import { speedRampDurationSeconds } from "../../utils/speedRamp";
 import { parseHighlights } from "../../utils/parseHighlights";
@@ -76,7 +85,10 @@ const BrollAssetFrame: React.FC<{
   asset: MediaAsset | null;
   fit: "cover" | "contain";
   accentColor: string;
-}> = ({ item, asset, fit, accentColor }) => {
+  colorAdjustment?: ColorAdjustment;
+}> = ({ item, asset, fit, accentColor, colorAdjustment }) => {
+  const resolvedAdjustment = item.colorAdjustment ?? colorAdjustment;
+  const vignette = vignetteBackground(resolvedAdjustment);
   if (!asset || (asset.kind !== "image" && asset.kind !== "video")) {
     return <MissingAsset assetId={item.assetId} />;
   }
@@ -93,6 +105,7 @@ const BrollAssetFrame: React.FC<{
           startFromSeconds={item.startFromSeconds}
           endAtSeconds={item.endAtSeconds}
           volume={item.volume}
+          colorAdjustment={resolvedAdjustment}
         />
       ) : (
         <Img
@@ -102,9 +115,20 @@ const BrollAssetFrame: React.FC<{
             height: "100%",
             objectFit: item.fit ?? fit,
             display: "block",
+            filter: colorAdjustmentFilter(resolvedAdjustment),
           }}
         />
       )}
+      {vignette ? (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: vignette,
+            pointerEvents: "none",
+          }}
+        />
+      ) : null}
       {item.caption ? (
         <div
           style={{
@@ -133,7 +157,16 @@ export const BrollSequence: React.FC<{
   sceneDuration: number;
   fit?: "cover" | "contain";
   cropPreset?: "16:9" | "1:1" | "4:5" | "9:16";
-}> = ({ items, assets, accentColor, sceneDuration, fit = "cover", cropPreset }) => {
+  colorAdjustment?: ColorAdjustment;
+}> = ({
+  items,
+  assets,
+  accentColor,
+  sceneDuration,
+  fit = "cover",
+  cropPreset,
+  colorAdjustment,
+}) => {
   const { fps } = useVideoConfig();
   const frameSize = dimensionsForCropPreset(WIDTH, HEIGHT, cropPreset);
   const durations = itemDurations(items, fps, sceneDuration);
@@ -167,6 +200,7 @@ export const BrollSequence: React.FC<{
               asset={findAsset(assets, item.assetId)}
               fit={fit}
               accentColor={accentColor}
+              colorAdjustment={colorAdjustment}
             />
           </Sequence>
         );

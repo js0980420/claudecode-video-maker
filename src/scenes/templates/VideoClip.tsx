@@ -1,6 +1,7 @@
 import React from "react";
-import { AssetManifest, SpeedRampSegment } from "../../types";
+import { AssetManifest, ColorAdjustment, SpeedRampSegment } from "../../types";
 import { findAsset } from "../../utils/assets";
+import { vignetteBackground } from "../../utils/colorAdjustments";
 import { dimensionsForCropPreset } from "../../utils/cropPresets";
 import { BLACK, GRAY, WHITE } from "../../constants";
 import { SpeedRampedVideo } from "./SpeedRampedVideo";
@@ -18,6 +19,7 @@ export const VideoClip: React.FC<{
   speedRamp?: SpeedRampSegment[];
   volume?: number;
   muted?: boolean;
+  colorAdjustment?: ColorAdjustment;
 }> = ({
   assetId,
   assets,
@@ -29,8 +31,10 @@ export const VideoClip: React.FC<{
   speedRamp,
   volume = 0,
   muted = true,
+  colorAdjustment,
 }) => {
   const frameSize = dimensionsForCropPreset(980, 420, cropPreset);
+  const vignette = vignetteBackground(colorAdjustment);
   const asset = findAsset(assets, assetId, "video");
   if (!asset) {
     return (
@@ -79,7 +83,18 @@ export const VideoClip: React.FC<{
         startFromSeconds={startFromSeconds}
         endAtSeconds={endAtSeconds}
         volume={volume}
+        colorAdjustment={colorAdjustment}
       />
+      {vignette ? (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: vignette,
+            pointerEvents: "none",
+          }}
+        />
+      ) : null}
       <div
         style={{
           position: "absolute",

@@ -92,6 +92,13 @@ export type SpeedRampSegment = {
   playbackRate: number; // source speed during this segment
 };
 
+export type ColorAdjustment = {
+  brightness?: number; // 0..2, default 1
+  contrast?: number; // 0..2, default 1
+  saturation?: number; // 0..2, default 1
+  vignette?: number; // 0..1, default 0
+};
+
 export type BrollSequenceItem = {
   assetId: string; // id of an image or video asset from content.assets
   durationSeconds?: number;
@@ -102,6 +109,7 @@ export type BrollSequenceItem = {
   speedRamp?: SpeedRampSegment[]; // video assets only; mutually exclusive with playbackRate/endAtSeconds
   volume?: number; // video assets only; 0..1, default 0
   muted?: boolean; // video assets only; default true
+  colorAdjustment?: ColorAdjustment;
   caption?: RichText;
 };
 
@@ -159,6 +167,7 @@ export type SceneVisual =
       speedRamp?: SpeedRampSegment[];
       volume?: number; // 0..1, default 0
       muted?: boolean; // default true
+      colorAdjustment?: ColorAdjustment;
     }
   | {
       type: "imageBackground";
@@ -166,12 +175,14 @@ export type SceneVisual =
       fit?: "cover" | "contain";
       cropPreset?: CropPreset;
       dim?: number; // 0..0.8 overlay opacity
+      colorAdjustment?: ColorAdjustment;
     }
   | {
       type: "brollSequence";
       items: BrollSequenceItem[];
       fit?: "cover" | "contain"; // default for items
       cropPreset?: CropPreset;
+      colorAdjustment?: ColorAdjustment;
     }
   | {
       type: "talkingHead";
@@ -186,6 +197,7 @@ export type SceneVisual =
       speedRamp?: SpeedRampSegment[];
       volume?: number;
       muted?: boolean;
+      colorAdjustment?: ColorAdjustment;
       speakerName?: string;
       speakerRole?: string;
     };

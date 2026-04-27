@@ -57,6 +57,31 @@ function validateSpeedRamp(
   });
 }
 
+function validateColorAdjustment(path: string, adjustment: unknown) {
+  if (adjustment === undefined) return;
+  if (typeof adjustment !== "object" || adjustment === null || Array.isArray(adjustment)) {
+    fail(path, "must be an object when provided");
+    return;
+  }
+  const values = adjustment as Record<string, unknown>;
+  for (const key of ["brightness", "contrast", "saturation"] as const) {
+    const value = values[key];
+    if (
+      value !== undefined &&
+      (typeof value !== "number" || !Number.isFinite(value) || value < 0 || value > 2)
+    ) {
+      fail(`${path}.${key}`, "must be a number between 0 and 2");
+    }
+  }
+  const vignette = values.vignette;
+  if (
+    vignette !== undefined &&
+    (typeof vignette !== "number" || !Number.isFinite(vignette) || vignette < 0 || vignette > 1)
+  ) {
+    fail(`${path}.vignette`, "must be a number between 0 and 1");
+  }
+}
+
 function validateThumbnail(path: string, thumbnail: ThumbnailContent) {
   if (!Array.isArray(thumbnail.titleParts) || thumbnail.titleParts.length !== 3) {
     fail(`${path}.titleParts`, "must contain exactly three strings");
@@ -183,6 +208,10 @@ function validateScene(scene: SceneConfig, index: number) {
         hasPlaybackRate: scene.visual.playbackRate !== undefined,
         hasEndAtSeconds: scene.visual.endAtSeconds !== undefined,
       });
+      validateColorAdjustment(
+        `${path}.visual.colorAdjustment`,
+        scene.visual.colorAdjustment,
+      );
       if (
         scene.visual.volume !== undefined &&
         (scene.visual.volume < 0 || scene.visual.volume > 1)
@@ -219,6 +248,10 @@ function validateScene(scene: SceneConfig, index: number) {
       ) {
         fail(`${path}.visual.dim`, "must be between 0 and 0.8");
       }
+      validateColorAdjustment(
+        `${path}.visual.colorAdjustment`,
+        scene.visual.colorAdjustment,
+      );
       break;
     case "brollSequence":
       if (!Array.isArray(scene.visual.items) || scene.visual.items.length === 0) {
@@ -271,6 +304,7 @@ function validateScene(scene: SceneConfig, index: number) {
             hasPlaybackRate: item.playbackRate !== undefined,
             hasEndAtSeconds: item.endAtSeconds !== undefined,
           });
+          validateColorAdjustment(`${itemPath}.colorAdjustment`, item.colorAdjustment);
           if (
             item.volume !== undefined &&
             (item.volume < 0 || item.volume > 1)
@@ -301,6 +335,10 @@ function validateScene(scene: SceneConfig, index: number) {
       ) {
         fail(`${path}.visual.cropPreset`, "must be 16:9, 1:1, 4:5, or 9:16");
       }
+      validateColorAdjustment(
+        `${path}.visual.colorAdjustment`,
+        scene.visual.colorAdjustment,
+      );
       break;
     case "talkingHead":
       if (!isNonEmptyString(scene.visual.speakerAssetId)) {
@@ -362,6 +400,10 @@ function validateScene(scene: SceneConfig, index: number) {
         hasPlaybackRate: scene.visual.playbackRate !== undefined,
         hasEndAtSeconds: scene.visual.endAtSeconds !== undefined,
       });
+      validateColorAdjustment(
+        `${path}.visual.colorAdjustment`,
+        scene.visual.colorAdjustment,
+      );
       if (
         scene.visual.volume !== undefined &&
         (scene.visual.volume < 0 || scene.visual.volume > 1)

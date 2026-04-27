@@ -1,7 +1,11 @@
 import React from "react";
 import { Img, staticFile } from "remotion";
-import { AssetManifest } from "../../types";
+import { AssetManifest, ColorAdjustment } from "../../types";
 import { findAsset } from "../../utils/assets";
+import {
+  colorAdjustmentFilter,
+  vignetteBackground,
+} from "../../utils/colorAdjustments";
 import { dimensionsForCropPreset } from "../../utils/cropPresets";
 import { BLACK, GRAY, WHITE } from "../../constants";
 
@@ -13,8 +17,10 @@ export const ImageBackground: React.FC<{
   fit?: "cover" | "contain";
   cropPreset?: "16:9" | "1:1" | "4:5" | "9:16";
   dim?: number;
-}> = ({ assetId, assets, fit = "cover", cropPreset, dim = 0.12 }) => {
+  colorAdjustment?: ColorAdjustment;
+}> = ({ assetId, assets, fit = "cover", cropPreset, dim = 0.12, colorAdjustment }) => {
   const frameSize = dimensionsForCropPreset(980, 420, cropPreset);
+  const vignette = vignetteBackground(colorAdjustment);
   const asset = findAsset(assets, assetId, "image");
   if (!asset) {
     return (
@@ -59,6 +65,7 @@ export const ImageBackground: React.FC<{
           height: "100%",
           objectFit: fit,
           display: "block",
+          filter: colorAdjustmentFilter(colorAdjustment),
         }}
       />
       <div
@@ -68,6 +75,16 @@ export const ImageBackground: React.FC<{
           background: `rgba(0,0,0,${Math.max(0, Math.min(0.8, dim))})`,
         }}
       />
+      {vignette ? (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: vignette,
+            pointerEvents: "none",
+          }}
+        />
+      ) : null}
       <div
         style={{
           position: "absolute",

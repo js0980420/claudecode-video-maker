@@ -1,7 +1,8 @@
 import React from "react";
 import { Sequence, staticFile, useVideoConfig } from "remotion";
 import { Video } from "@remotion/media";
-import { SpeedRampSegment } from "../../types";
+import { ColorAdjustment, SpeedRampSegment } from "../../types";
+import { colorAdjustmentFilter } from "../../utils/colorAdjustments";
 import { speedRampToVideoSegments } from "../../utils/speedRamp";
 
 export const SpeedRampedVideo: React.FC<{
@@ -13,6 +14,7 @@ export const SpeedRampedVideo: React.FC<{
   endAtSeconds?: number;
   playbackRate?: number;
   speedRamp?: SpeedRampSegment[];
+  colorAdjustment?: ColorAdjustment;
 }> = ({
   src,
   fit,
@@ -22,8 +24,15 @@ export const SpeedRampedVideo: React.FC<{
   endAtSeconds,
   playbackRate = 1,
   speedRamp,
+  colorAdjustment,
 }) => {
   const { fps } = useVideoConfig();
+  const mediaStyle = {
+    width: "100%",
+    height: "100%",
+    display: "block",
+    filter: colorAdjustmentFilter(colorAdjustment),
+  };
 
   if (speedRamp && speedRamp.length > 0) {
     return (
@@ -44,7 +53,7 @@ export const SpeedRampedVideo: React.FC<{
                 trimBefore={segment.trimBeforeFrames}
                 trimAfter={segment.trimAfterFrames}
                 volume={() => (muted ? 0 : volume)}
-                style={{ width: "100%", height: "100%", display: "block" }}
+                style={mediaStyle}
               />
             </Sequence>
           ),
@@ -66,7 +75,7 @@ export const SpeedRampedVideo: React.FC<{
           : Math.max(0, Math.floor(endAtSeconds * fps))
       }
       volume={() => (muted ? 0 : volume)}
-      style={{ width: "100%", height: "100%", display: "block" }}
+      style={mediaStyle}
     />
   );
 };
