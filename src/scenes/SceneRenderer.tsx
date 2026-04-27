@@ -18,6 +18,7 @@ import { VideoClip } from "./templates/VideoClip";
 import { ImageBackground } from "./templates/ImageBackground";
 import { BrollSequence } from "./templates/BrollSequence";
 import { TalkingHead } from "./templates/TalkingHead";
+import { ThreeScene } from "./templates/ThreeScene";
 
 type Props = {
   scene: SceneConfig;
@@ -150,5 +151,7 @@ const VisualSlot: React.FC<{
           accentColor={accentColor}
         />
       );
+    case "threeScene":
+      return <ThreeScene {...scene.visual} />;
   }
 };

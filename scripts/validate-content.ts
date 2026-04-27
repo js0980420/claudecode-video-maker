@@ -430,6 +430,43 @@ function validateScene(scene: SceneConfig, index: number) {
         fail(`${path}.visual.speakerRole`, "must be a non-empty string when provided");
       }
       break;
+    case "threeScene":
+      if (scene.visual.scene) {
+        if (
+          scene.visual.scene.primitive !== undefined &&
+          scene.visual.scene.primitive !== "box" &&
+          scene.visual.scene.primitive !== "sphere" &&
+          scene.visual.scene.primitive !== "torus"
+        ) {
+          fail(`${path}.visual.scene.primitive`, "must be box, sphere, or torus");
+        }
+        if (
+          scene.visual.scene.color !== undefined &&
+          !isHexColor(scene.visual.scene.color)
+        ) {
+          fail(`${path}.visual.scene.color`, "must be a #RRGGBB hex color");
+        }
+        if (
+          scene.visual.scene.rotationSpeed !== undefined &&
+          !Number.isFinite(scene.visual.scene.rotationSpeed)
+        ) {
+          fail(`${path}.visual.scene.rotationSpeed`, "must be finite");
+        }
+        if (
+          scene.visual.scene.cameraZ !== undefined &&
+          (!Number.isFinite(scene.visual.scene.cameraZ) ||
+            scene.visual.scene.cameraZ <= 0)
+        ) {
+          fail(`${path}.visual.scene.cameraZ`, "must be > 0");
+        }
+      }
+      if (
+        scene.visual.cropPreset !== undefined &&
+        !isCropPreset(scene.visual.cropPreset)
+      ) {
+        fail(`${path}.visual.cropPreset`, "must be 16:9, 1:1, 4:5, or 9:16");
+      }
+      break;
   }
 }
 

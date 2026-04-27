@@ -122,6 +122,15 @@ export type TimingMarker = {
   sceneId?: string;
 };
 
+export type ThreeScenePrimitive = "box" | "sphere" | "torus";
+
+export type ThreeSceneConfig = {
+  primitive?: ThreeScenePrimitive;
+  color?: string;
+  rotationSpeed?: number;
+  cameraZ?: number;
+};
+
 export type BrollSequenceItem = {
   assetId: string; // id of an image or video asset from content.assets
   durationSeconds?: number;
@@ -223,6 +232,11 @@ export type SceneVisual =
       colorAdjustment?: ColorAdjustment;
       speakerName?: string;
       speakerRole?: string;
+    }
+  | {
+      type: "threeScene";
+      scene?: ThreeSceneConfig;
+      cropPreset?: CropPreset;
     };
 
 export type SceneConfig = {

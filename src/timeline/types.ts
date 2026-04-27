@@ -1,6 +1,7 @@
 import {
   AssetManifest,
   SceneConfig,
+  ThreeSceneConfig,
   TimingMarkerKind,
   VideoContent,
 } from "../types";
@@ -79,6 +80,11 @@ export type AudioAssetTimelineClip = TimelineClipBase & {
   loop?: boolean;
 };
 
+export type ThreeSceneTimelineClip = TimelineClipBase & {
+  type: "threeScene";
+  scene?: ThreeSceneConfig;
+};
+
 export type TimelineClip =
   | SceneTimelineClip
   | VideoAssetTimelineClip
@@ -87,7 +93,8 @@ export type TimelineClip =
   | TitleOverlayTimelineClip
   | LowerThirdTimelineClip
   | SubtitleTimelineClip
-  | AudioAssetTimelineClip;
+  | AudioAssetTimelineClip
+  | ThreeSceneTimelineClip;
 
 export type TimelineTrackKind =
   | "scene"

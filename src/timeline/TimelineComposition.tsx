@@ -4,6 +4,7 @@ import { Audio } from "@remotion/media";
 import { BLACK, WHITE } from "../constants";
 import { SceneRenderer } from "../scenes/SceneRenderer";
 import { ImageBackground } from "../scenes/templates/ImageBackground";
+import { ThreeScene } from "../scenes/templates/ThreeScene";
 import { VideoClip } from "../scenes/templates/VideoClip";
 import { findAsset } from "../utils/assets";
 import { SceneTimelineClip, Timeline, TimelineClip } from "./types";
@@ -284,6 +285,16 @@ function renderClip(timeline: Timeline, clip: TimelineClip) {
         </Sequence>
       );
     }
+    case "threeScene":
+      return (
+        <Sequence key={clip.id} from={clip.from} durationInFrames={clip.durationInFrames}>
+          <VisualClipFrame clip={clip}>
+            <AbsoluteFill style={{ alignItems: "center", justifyContent: "center" }}>
+              <ThreeScene scene={clip.scene} />
+            </AbsoluteFill>
+          </VisualClipFrame>
+        </Sequence>
+      );
   }
 }
 
