@@ -24,6 +24,61 @@ export type IconRef =
   | { kind: "builtin"; name: IconName; label?: string }
   | { kind: "emoji"; char: string; label?: string };
 
+// ----- User media assets ---------------------------------------
+// These are render-ready assets, normally under public/ and referenced by
+// stable ids from scene visuals or future timeline clips.
+
+export type AssetKind = "image" | "video" | "audio" | "model3d" | "font";
+
+export type AssetBase = {
+  id: string;
+  kind: AssetKind;
+  src: string; // path under public/, e.g. "videos/demo.mp4"
+  label?: string;
+  attribution?: string;
+  tags?: string[];
+};
+
+export type ImageAsset = AssetBase & {
+  kind: "image";
+  width?: number;
+  height?: number;
+};
+
+export type VideoAsset = AssetBase & {
+  kind: "video";
+  width?: number;
+  height?: number;
+  durationSeconds?: number;
+  codec?: string;
+};
+
+export type AudioAsset = AssetBase & {
+  kind: "audio";
+  durationSeconds?: number;
+};
+
+export type Model3DAsset = AssetBase & {
+  kind: "model3d";
+  format?: "glb" | "gltf" | "obj" | "fbx" | string;
+};
+
+export type FontAsset = AssetBase & {
+  kind: "font";
+  family: string;
+};
+
+export type MediaAsset =
+  | ImageAsset
+  | VideoAsset
+  | AudioAsset
+  | Model3DAsset
+  | FontAsset;
+
+export type AssetManifest = {
+  assets: MediaAsset[];
+};
+
 // Title / description support [bracket] syntax for accent color.
 //   "用 [Claude Code] 做影片" → "Claude Code" 會被上重點色
 //   "Made with [Claude] + [Remotion]" — same idea
