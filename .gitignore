@@ -49,11 +49,11 @@ public/music/*.mp3
 # Isolated dev worktrees created by superpowers skills
 .worktrees/
 
-# Internal AI workflow artifacts — 不屬於專案交付物
+# Local/internal AI workflow artifacts — 不屬於專案交付物
 docs/superpowers/
 AG*.md
-.pl*/
-.re*/
+.planning/
+.reference/
 
 # Scraped tutorial assets (regenerable via `npm run capture:tutorial`)
 # 結構保留,產物不追蹤 —— 圖片和爬蟲 raw dump 都可重跑
