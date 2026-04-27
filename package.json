@@ -40,6 +40,7 @@
     "validate:content": "tsx scripts/validate-content.ts",
     "validate:tutorial": "tsx scripts/validate-tutorial.ts",
     "validate:assets": "tsx scripts/validate-assets.ts",
+    "smoke:media-scenes": "tsx scripts/smoke-media-scenes.ts",
     "publish:threads": "node scripts/publish-threads.mjs",
     "archive": "node scripts/archive.mjs",
     "upgrade": "remotion upgrade",
