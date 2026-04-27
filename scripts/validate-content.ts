@@ -3,6 +3,7 @@ import { SceneConfig, ThumbnailContent } from "../src/types";
 import { isCropPreset } from "../src/utils/cropPresets";
 
 const errors: string[] = [];
+const validMarkerKinds = new Set(["beat", "cut", "emphasis", "caption", "custom"]);
 
 function fail(path: string, message: string) {
   errors.push(`${path}: ${message}`);
@@ -458,6 +459,62 @@ if (!Array.isArray(content.scenes) || content.scenes.length === 0) {
     if (ids.has(scene.id)) fail(`scenes[${i}].id`, `duplicate scene id: ${scene.id}`);
     ids.add(scene.id);
   });
+}
+
+const sceneIds = new Set(
+  Array.isArray(content.scenes)
+    ? content.scenes
+        .map((scene) => scene.id)
+        .filter((id): id is string => typeof id === "string")
+    : [],
+);
+
+if (content.markers !== undefined) {
+  if (!Array.isArray(content.markers)) {
+    fail("markers", "must be an array when provided");
+  } else {
+    const markerIds = new Set<string>();
+    content.markers.forEach((marker, i) => {
+      const markerPath = `markers[${i}]`;
+      if (!isNonEmptyString(marker.id)) {
+        fail(`${markerPath}.id`, "must be a non-empty string");
+      } else if (markerIds.has(marker.id)) {
+        fail(`${markerPath}.id`, `duplicate marker id: ${marker.id}`);
+      } else {
+        markerIds.add(marker.id);
+      }
+      if (marker.kind !== undefined && !validMarkerKinds.has(marker.kind)) {
+        fail(`${markerPath}.kind`, "must be beat, cut, emphasis, caption, or custom");
+      }
+      const hasSeconds = marker.seconds !== undefined;
+      const hasFrame = marker.frame !== undefined;
+      if (hasSeconds === hasFrame) {
+        fail(`${markerPath}`, "must provide exactly one of seconds or frame");
+      }
+      if (
+        marker.seconds !== undefined &&
+        (!Number.isFinite(marker.seconds) || marker.seconds < 0)
+      ) {
+        fail(`${markerPath}.seconds`, "must be >= 0");
+      }
+      if (
+        marker.frame !== undefined &&
+        (!Number.isFinite(marker.frame) || marker.frame < 0)
+      ) {
+        fail(`${markerPath}.frame`, "must be >= 0");
+      }
+      if (marker.sceneId !== undefined) {
+        if (!isNonEmptyString(marker.sceneId)) {
+          fail(`${markerPath}.sceneId`, "must be non-empty when provided");
+        } else if (!sceneIds.has(marker.sceneId)) {
+          fail(`${markerPath}.sceneId`, `does not match a scene id: ${marker.sceneId}`);
+        }
+      }
+      if (marker.label !== undefined && !isNonEmptyString(marker.label)) {
+        fail(`${markerPath}.label`, "must be non-empty when provided");
+      }
+    });
+  }
 }
 
 if (typeof content.voiceover.enabled !== "boolean") {

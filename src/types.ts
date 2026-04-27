@@ -106,6 +106,22 @@ export type AudioDuckingConfig = {
   releaseFrames?: number; // default 18
 };
 
+export type TimingMarkerKind =
+  | "beat"
+  | "cut"
+  | "emphasis"
+  | "caption"
+  | "custom";
+
+export type TimingMarker = {
+  id: string;
+  kind?: TimingMarkerKind;
+  seconds?: number;
+  frame?: number;
+  label?: string;
+  sceneId?: string;
+};
+
 export type BrollSequenceItem = {
   assetId: string; // id of an image or video asset from content.assets
   durationSeconds?: number;
@@ -249,6 +265,7 @@ export type VideoContent = {
     primaryColor: string; // accent color used everywhere (hex)
   };
   assets?: AssetManifest; // optional render-ready assets referenced by scene ids
+  markers?: TimingMarker[];
   scenes: SceneConfig[]; // any number of scenes
   voiceover: {
     enabled: boolean;

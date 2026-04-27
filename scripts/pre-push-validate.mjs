@@ -19,6 +19,7 @@ const steps = [
       "src/utils/colorAdjustments.test.ts",
       "src/utils/cropPresets.test.ts",
       "src/utils/speedRamp.test.ts",
+      "src/utils/timingMarkers.test.ts",
     ],
   ],
 ];

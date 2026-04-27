@@ -1,6 +1,7 @@
 import {
   AssetManifest,
   SceneConfig,
+  TimingMarkerKind,
   VideoContent,
 } from "../types";
 
@@ -101,6 +102,14 @@ export type TimelineTrack = {
   clips: TimelineClip[];
 };
 
+export type TimelineMarker = {
+  id: string;
+  kind: TimingMarkerKind;
+  frame: number;
+  label?: string;
+  sceneId?: string;
+};
+
 export type Timeline = {
   id: string;
   width: number;
@@ -109,5 +118,6 @@ export type Timeline = {
   durationInFrames: number;
   brand: VideoContent["brand"];
   assets?: AssetManifest;
+  markers?: TimelineMarker[];
   tracks: TimelineTrack[];
 };

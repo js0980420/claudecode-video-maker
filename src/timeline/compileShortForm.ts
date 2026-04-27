@@ -1,5 +1,6 @@
 import { VideoContent } from "../types";
 import { Timeline, SceneTimelineClip } from "./types";
+import { timingMarkersToTimelineMarkers } from "../utils/timingMarkers";
 
 function durationForScene(
   content: VideoContent,
@@ -44,6 +45,7 @@ export function compileShortFormTimeline(
     durationInFrames: cursor,
     brand: content.brand,
     assets: content.assets,
+    markers: timingMarkersToTimelineMarkers(content.markers, content.meta.fps),
     tracks: [
       {
         id: "scenes",
