@@ -204,7 +204,7 @@ function renderClip(timeline: Timeline, clip: TimelineClip) {
               style={{
                 justifyContent: "flex-end",
                 alignItems: "center",
-                padding: "0 120px 80px",
+                padding: clip.style === "sentence" ? "0 160px 140px" : "0 120px 80px",
                 pointerEvents: "none",
               }}
             >
@@ -212,11 +212,13 @@ function renderClip(timeline: Timeline, clip: TimelineClip) {
                 style={{
                   color: WHITE,
                   background: "rgba(0,0,0,0.72)",
-                  padding: "14px 24px",
-                  borderRadius: 10,
-                  fontSize: 34,
-                  fontWeight: 800,
+                  padding: clip.style === "sentence" ? "18px 30px" : "14px 24px",
+                  borderRadius: clip.style === "sentence" ? 14 : 10,
+                  fontSize: clip.style === "sentence" ? 46 : 34,
+                  fontWeight: 900,
+                  lineHeight: 1.18,
                   textAlign: "center",
+                  maxWidth: clip.style === "sentence" ? 1280 : 1180,
                 }}
               >
                 {clip.text}

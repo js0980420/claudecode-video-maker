@@ -32,9 +32,50 @@ export function captionsToTrack(
   };
 }
 
+function sentenceEnds(text: string) {
+  return /[.!?。！？]\s*$/.test(text.trim());
+}
+
+export function captionsToSentenceTrack(
+  captions: Caption[],
+  options: { id?: string; language?: string; label?: string } = {},
+): SubtitleTrack {
+  const cues: SubtitleCue[] = [];
+  let buffer: Caption[] = [];
+
+  const flush = () => {
+    if (buffer.length === 0) return;
+    const first = buffer[0];
+    const last = buffer[buffer.length - 1];
+    cues.push({
+      id: `cue-${String(cues.length + 1).padStart(4, "0")}`,
+      text: buffer.map((caption) => caption.text).join(" ").replace(/\s+/g, " ").trim(),
+      startMs: first.startMs,
+      endMs: last.endMs,
+      timestampMs: null,
+      confidence: null,
+    });
+    buffer = [];
+  };
+
+  for (const caption of captions) {
+    buffer.push(caption);
+    if (sentenceEnds(caption.text)) flush();
+  }
+  flush();
+
+  return {
+    id: options.id ?? "sentences",
+    language: options.language,
+    label: options.label,
+    cues,
+  };
+}
+
 export function cueToTimelineClip(
   cue: SubtitleCue,
   fps: number,
+  style: SubtitleTimelineClip["style"] = "standard",
 ): SubtitleTimelineClip {
   const from = Math.max(0, Math.floor((cue.startMs / 1000) * fps));
   const endFrame = Math.max(from + 1, Math.ceil((cue.endMs / 1000) * fps));
@@ -43,6 +84,7 @@ export function cueToTimelineClip(
     type: "subtitleCue",
     cueId: cue.id,
     text: cue.text,
+    style,
     from,
     durationInFrames: endFrame - from,
   };
@@ -51,8 +93,9 @@ export function cueToTimelineClip(
 export function subtitleTrackToTimelineClips(
   track: SubtitleTrack,
   fps: number,
+  style: SubtitleTimelineClip["style"] = "standard",
 ): SubtitleTimelineClip[] {
-  return track.cues.map((cue) => cueToTimelineClip(cue, fps));
+  return track.cues.map((cue) => cueToTimelineClip(cue, fps, style));
 }
 
 export function parseSrtToTrack(

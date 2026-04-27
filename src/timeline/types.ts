@@ -68,6 +68,7 @@ export type SubtitleTimelineClip = TimelineClipBase & {
   type: "subtitleCue";
   cueId?: string;
   text: string;
+  style?: "standard" | "sentence";
 };
 
 export type AudioAssetTimelineClip = TimelineClipBase & {

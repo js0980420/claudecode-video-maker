@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
+  captionsToSentenceTrack,
   parseSrtToTrack,
   parseVttToTrack,
   subtitleTrackToTimelineClips,
@@ -28,6 +29,20 @@ test("parseSrtToTrack parses cues into the shared subtitle model", () => {
   assert.equal(track.cues[0].endMs, 2500);
 });
 
+test("captionsToSentenceTrack groups fragments until sentence punctuation", () => {
+  const track = captionsToSentenceTrack([
+    { text: "Hello", startMs: 0, endMs: 200, timestampMs: null, confidence: null },
+    { text: "world.", startMs: 200, endMs: 500, timestampMs: null, confidence: null },
+    { text: "Next", startMs: 700, endMs: 900, timestampMs: null, confidence: null },
+  ]);
+
+  assert.equal(track.cues.length, 2);
+  assert.equal(track.cues[0].text, "Hello world.");
+  assert.equal(track.cues[0].startMs, 0);
+  assert.equal(track.cues[0].endMs, 500);
+  assert.equal(track.cues[1].text, "Next");
+});
+
 test("parseVttToTrack parses basic WebVTT cues", () => {
   const track = parseVttToTrack(
     [
@@ -50,7 +65,8 @@ test("subtitleTrackToTimelineClips converts milliseconds to frames", () => {
     ["WEBVTT", "", "00:00:01.000 --> 00:00:02.000", "Caption"].join("\n"),
   );
 
-  const clips = subtitleTrackToTimelineClips(track, 30);
+  const clips = subtitleTrackToTimelineClips(track, 30, "sentence");
   assert.equal(clips[0].from, 30);
   assert.equal(clips[0].durationInFrames, 30);
+  assert.equal(clips[0].style, "sentence");
 });
