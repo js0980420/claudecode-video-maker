@@ -15,6 +15,7 @@ import { Terminal } from "./templates/Terminal";
 import { ChatBox } from "./templates/ChatBox";
 import { PhoneCTA } from "./templates/PhoneCTA";
 import { VideoClip } from "./templates/VideoClip";
+import { ImageBackground } from "./templates/ImageBackground";
 
 type Props = {
   scene: SceneConfig;
@@ -126,5 +127,7 @@ const VisualSlot: React.FC<{
       return <PhoneCTA {...scene.visual} accentColor={accentColor} />;
     case "videoClip":
       return <VideoClip {...scene.visual} assets={assets} />;
+    case "imageBackground":
+      return <ImageBackground {...scene.visual} assets={assets} />;
   }
 };

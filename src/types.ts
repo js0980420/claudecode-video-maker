@@ -130,6 +130,12 @@ export type SceneVisual =
       type: "videoClip";
       assetId: string; // id of a video asset from content.assets
       fit?: "cover" | "contain";
+    }
+  | {
+      type: "imageBackground";
+      assetId: string; // id of an image asset from content.assets
+      fit?: "cover" | "contain";
+      dim?: number; // 0..0.8 overlay opacity
     };
 
 export type SceneConfig = {

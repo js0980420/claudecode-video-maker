@@ -111,6 +111,24 @@ function validateScene(scene: SceneConfig, index: number) {
         fail(`${path}.visual.fit`, "must be cover or contain");
       }
       break;
+    case "imageBackground":
+      if (!isNonEmptyString(scene.visual.assetId)) {
+        fail(`${path}.visual.assetId`, "must be a non-empty asset id");
+      }
+      if (
+        scene.visual.fit !== undefined &&
+        scene.visual.fit !== "cover" &&
+        scene.visual.fit !== "contain"
+      ) {
+        fail(`${path}.visual.fit`, "must be cover or contain");
+      }
+      if (
+        scene.visual.dim !== undefined &&
+        (scene.visual.dim < 0 || scene.visual.dim > 0.8)
+      ) {
+        fail(`${path}.visual.dim`, "must be between 0 and 0.8");
+      }
+      break;
   }
 }
 
