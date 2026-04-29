@@ -69,8 +69,9 @@ if (!CLIENT_ID || !CLIENT_SECRET) {
 
 const PORT = 8765;
 const REDIRECT_URI = `http://localhost:${PORT}/oauth2callback`;
-// youtube.upload 同時涵蓋 videos.insert 跟 thumbnails.set,最小授權
-const SCOPE = "https://www.googleapis.com/auth/youtube.upload";
+// youtube 涵蓋 videos.insert / thumbnails.set / videos.update / videos.list
+// （youtube.upload 只有 insert 權限,不含 update — 2026 更新為完整 scope）
+const SCOPE = "https://www.googleapis.com/auth/youtube";
 
 const authUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth");
 authUrl.searchParams.set("client_id", CLIENT_ID);

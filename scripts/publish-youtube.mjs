@@ -84,10 +84,13 @@ for (let i = 0; i < args.length; i++) {
 
 const VIDEO = opts.video;
 const TITLE = opts.title;
-const DESCRIPTION = opts.description ?? "";
+// --description-file 比 --description 安全(避開 shell $VAR 展開、long body quoting)
+const DESCRIPTION = opts["description-file"]
+  ? fs.readFileSync(opts["description-file"], "utf-8")
+  : (opts.description ?? "");
 const TAGS = opts.tags ? opts.tags.split(",").map((t) => t.trim()).filter(Boolean) : [];
 const THUMBNAIL = opts.thumbnail; // 本機路徑,選填
-const VISIBILITY = opts.visibility ?? "private"; // 預設 private,確認過再改
+const VISIBILITY = opts.visibility ?? "public"; // 預設 public(專案規則:發布即公開)
 
 if (!VIDEO || !TITLE) {
   console.error(
