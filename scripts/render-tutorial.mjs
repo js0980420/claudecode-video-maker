@@ -14,11 +14,13 @@
  *   output/<videoName>-yt.png
  *   output/<videoName>-ig.png
  *   output/<videoName>-reel.png
+ *
+ * 速度:雙 mp4 parallel + concurrency 4x,~10 分鐘出片。
  */
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { spawnSync } from "child_process";
+import { spawn, spawnSync } from "child_process";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.join(__dirname, "..");
@@ -28,7 +30,6 @@ if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, { recursive: true });
 }
 
-// 從 src/tutorial/config.ts 讀 videoName
 const configPath = path.join(projectRoot, "src", "tutorial", "config.ts");
 if (!fs.existsSync(configPath)) {
   console.error("找不到 src/tutorial/config.ts。先 npm install 跑 postinstall。");
@@ -44,7 +45,50 @@ const videoName = m[1];
 
 console.log(`\n🎬 開始渲染 tutorial: ${videoName}\n`);
 
-function runRemotion(subcommand, compositionId, outputPath) {
+const CONCURRENCY = "4";
+
+function renderVideoParallel(compositionId, outputPath, label) {
+  return new Promise((resolve) => {
+    const proc = spawn(
+      "npx",
+      ["remotion", "render", compositionId, outputPath, "--concurrency", CONCURRENCY],
+      { cwd: projectRoot },
+    );
+    const prefix = (chunk) =>
+      chunk
+        .toString()
+        .split("\n")
+        .filter((line) => line.length > 0)
+        .map((line) => `[${label}] ${line}`)
+        .join("\n");
+    proc.stdout.on("data", (d) => process.stdout.write(prefix(d) + "\n"));
+    proc.stderr.on("data", (d) => process.stderr.write(prefix(d) + "\n"));
+    proc.on("close", (code) => resolve(code));
+  });
+}
+
+console.log("📹 並行渲染 16:9 + 9:16 兩支 mp4 (concurrency 4x)...\n");
+const videoOut = `output/${videoName}.mp4`;
+const reelOut = `output/${videoName}-reel.mp4`;
+
+const [videoCode, reelCode] = await Promise.all([
+  renderVideoParallel(videoName, videoOut, "16:9"),
+  renderVideoParallel(`${videoName}-Reel`, reelOut, "9:16"),
+]);
+
+if (videoCode !== 0) {
+  console.error(`\n❌ 16:9 影片渲染失敗 (exit ${videoCode})`);
+  process.exit(1);
+}
+console.log(`\n✅ ${videoOut}`);
+
+if (reelCode !== 0) {
+  console.error(`❌ 9:16 Reel 渲染失敗 (exit ${reelCode}) — 縮圖繼續`);
+} else {
+  console.log(`✅ ${reelOut}\n`);
+}
+
+function runRemotionSync(subcommand, compositionId, outputPath) {
   return spawnSync(
     "npx",
     ["remotion", subcommand, compositionId, outputPath],
@@ -52,28 +96,6 @@ function runRemotion(subcommand, compositionId, outputPath) {
   );
 }
 
-// 1. 影片
-console.log("📹 渲染影片...");
-const videoOut = `output/${videoName}.mp4`;
-const renderResult = runRemotion("render", videoName, videoOut);
-if (renderResult.status !== 0) {
-  console.error(`❌ 影片渲染失敗 (exit ${renderResult.status})`);
-  process.exit(1);
-}
-console.log(`✅ ${videoOut}\n`);
-
-// 2. 9:16 Reel 影片
-console.log("📹 渲染 9:16 Reel mp4...");
-const reelOut = `output/${videoName}-reel.mp4`;
-const reelResult = runRemotion("render", `${videoName}-Reel`, reelOut);
-if (reelResult.status !== 0) {
-  console.error(`❌ Reel mp4 渲染失敗 (exit ${reelResult.status})`);
-  // 不 process.exit — 縮圖還是繼續跑
-} else {
-  console.log(`✅ ${reelOut}\n`);
-}
-
-// 3. 縮圖 3 張(composition id 對應 src/Root.tsx 的 Still 註冊)
 const thumbs = [
   { compSuffix: "ThumbnailYT", fileSuffix: "yt", label: "YouTube" },
   { compSuffix: "ThumbnailIG", fileSuffix: "ig", label: "Instagram" },
@@ -83,7 +105,7 @@ for (const t of thumbs) {
   const compId = `${videoName}-${t.compSuffix}`;
   const out = `output/${videoName}-${t.fileSuffix}.png`;
   console.log(`🖼  ${t.label} 縮圖...`);
-  const r = runRemotion("still", compId, out);
+  const r = runRemotionSync("still", compId, out);
   if (r.status !== 0) {
     console.error(`⚠️ ${t.label} 縮圖失敗 (exit ${r.status})`);
     continue;
