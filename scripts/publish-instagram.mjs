@@ -78,7 +78,7 @@ for (let i = 0; i < args.length; i++) {
 }
 const VIDEO_URL = opts.url;
 const CAPTION = opts.caption ?? "";
-const COVER_URL = opts.cover; // optional,thumbnail jpg URL
+let COVER_URL = opts.cover; // optional — 沒給會自動 derive
 const SHARE_TO_FEED = opts["share-to-feed"] !== "false"; // 預設同步發到 Feed
 
 if (!VIDEO_URL) {
@@ -90,6 +90,20 @@ if (!/^https:\/\//.test(VIDEO_URL)) {
   console.error("❌ video URL 必須是 HTTPS(Meta server 不抓 http)");
   process.exit(1);
 }
+
+// 自動 derive cover URL —— 慣例:`<name>-threads.mp4` 對應 `<name>-reel.jpg`
+// 沒帶 --cover 也會自動嘗試這個路徑(若 R2 沒這檔會 404,Meta 用第一幀當縮圖)
+if (!COVER_URL) {
+  const derived = VIDEO_URL.replace(/-threads\.mp4$/, "-reel.jpg")
+    .replace(/-reel\.mp4$/, "-reel.jpg")
+    .replace(/\.mp4$/, ".jpg");
+  if (derived !== VIDEO_URL) {
+    COVER_URL = derived;
+    console.log(`ℹ️  自動 derive cover URL:${COVER_URL}`);
+    console.log(`   (要關掉自動 derive 改帶 --cover '' 即可)`);
+  }
+}
+
 if (COVER_URL && !/^https:\/\//.test(COVER_URL)) {
   console.error("❌ cover URL 必須是 HTTPS");
   process.exit(1);
