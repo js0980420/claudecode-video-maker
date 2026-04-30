@@ -67,13 +67,34 @@ function renderVideoParallel(compositionId, outputPath, label) {
   });
 }
 
-console.log("📹 並行渲染 16:9 + 9:16 兩支 mp4 (concurrency 4x)...\n");
+function runSubtitlesGen() {
+  return new Promise((resolve) => {
+    const proc = spawn(
+      "node",
+      ["scripts/generate-subtitles.mjs"],
+      { cwd: projectRoot },
+    );
+    const prefix = (chunk) =>
+      chunk
+        .toString()
+        .split("\n")
+        .filter((line) => line.length > 0)
+        .map((line) => `[SRT] ${line}`)
+        .join("\n");
+    proc.stdout.on("data", (d) => process.stdout.write(prefix(d) + "\n"));
+    proc.stderr.on("data", (d) => process.stderr.write(prefix(d) + "\n"));
+    proc.on("close", (code) => resolve(code));
+  });
+}
+
+console.log("📹 並行渲染 16:9 + 9:16 兩支 mp4 + SRT (concurrency 4x)...\n");
 const videoOut = `output/${videoName}.mp4`;
 const reelOut = `output/${videoName}-reel.mp4`;
 
-const [videoCode, reelCode] = await Promise.all([
+const [videoCode, reelCode, srtCode] = await Promise.all([
   renderVideoParallel(videoName, videoOut, "16:9"),
   renderVideoParallel(`${videoName}-Reel`, reelOut, "9:16"),
+  runSubtitlesGen(),
 ]);
 
 if (videoCode !== 0) {
@@ -85,8 +106,15 @@ console.log(`\n✅ ${videoOut}`);
 if (reelCode !== 0) {
   console.error(`❌ 9:16 Reel 渲染失敗 (exit ${reelCode}) — 縮圖繼續`);
 } else {
-  console.log(`✅ ${reelOut}\n`);
+  console.log(`✅ ${reelOut}`);
 }
+
+if (srtCode !== 0) {
+  console.error(`⚠️ SRT 生成失敗 (exit ${srtCode}) — mp4 不受影響`);
+} else {
+  console.log(`✅ output/${videoName}.srt`);
+}
+console.log();
 
 function runRemotionSync(subcommand, compositionId, outputPath) {
   return spawnSync(
