@@ -2,6 +2,7 @@ import React from "react";
 import {
   AbsoluteFill,
   Audio,
+  Easing,
   Img,
   Sequence,
   interpolate,
@@ -213,17 +214,26 @@ const PageContent: React.FC<{
 
       {blocks.map((block, i) => {
         const { from } = blockTimings[i];
+        // #3 stagger: Back easing 進場(opacity + translateY 24→0)
         const opacity = interpolate(
           frame,
           [from, from + FADE_IN_FRAMES],
           [0, 1],
-          { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+          {
+            extrapolateLeft: "clamp",
+            extrapolateRight: "clamp",
+            easing: Easing.out(Easing.back(1.2)),
+          },
         );
         const translateY = interpolate(
           frame,
           [from, from + FADE_IN_FRAMES],
-          [16, 0],
-          { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+          [24, 0],
+          {
+            extrapolateLeft: "clamp",
+            extrapolateRight: "clamp",
+            easing: Easing.out(Easing.back(1.2)),
+          },
         );
         // paragraph(列點)在 9:16 直式才縮排 60px(列點 1/2/3/4 對齊在縮排位置);
         // 16:9 橫式維持居中(避免 paragraph 貼左、右側留大空白「跑到外面」感)。
