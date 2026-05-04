@@ -1,5 +1,5 @@
 import React from "react";
-import { spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { useCurrentFrame, interpolate, Easing, spring, useVideoConfig } from "remotion";
 import { IconRef, SceneVisual } from "../../types";
 import { Icon } from "../../icons";
 import { BLACK } from "../../constants";
@@ -7,6 +7,15 @@ import { BLACK } from "../../constants";
 type Props = Extract<SceneVisual, { type: "crossedItems" }> & {
   accentColor: string;
 };
+
+function backSlide(frame: number, delay: number): number {
+  const f = Math.max(0, frame - delay);
+  return interpolate(f, [0, 20], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.out(Easing.back(1.3)),
+  });
+}
 
 export const CrossedItems: React.FC<Props> = ({
   left,
@@ -16,31 +25,25 @@ export const CrossedItems: React.FC<Props> = ({
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const leftPop = spring({ frame: frame - 8, fps, config: { damping: 12 } });
-  const leftCross = spring({
-    frame: frame - 18,
-    fps,
-    config: { damping: 10 },
-  });
-  const rightPop = spring({ frame: frame - 16, fps, config: { damping: 12 } });
-  const rightCross = spring({
-    frame: frame - 26,
-    fps,
-    config: { damping: 10 },
-  });
+  // #3 stagger: left 先(0),right 後(3)
+  const leftP = backSlide(frame, 0);
+  const rightP = backSlide(frame, 3);
+  // 打叉線沿用 spring(視覺上需要有彈性的畫線感)
+  const leftCross = spring({ frame: frame - 18, fps, config: { damping: 10 } });
+  const rightCross = spring({ frame: frame - 26, fps, config: { damping: 10 } });
 
   return (
     <div style={{ display: "flex", gap: 80 }}>
       <CrossedItem
         ref_={left}
         accentColor={accentColor}
-        scale={leftPop}
+        progress={leftP}
         crossProgress={leftCross}
       />
       <CrossedItem
         ref_={right}
         accentColor={accentColor}
-        scale={rightPop}
+        progress={rightP}
         crossProgress={rightCross}
       />
     </div>
@@ -50,12 +53,13 @@ export const CrossedItems: React.FC<Props> = ({
 const CrossedItem: React.FC<{
   ref_: IconRef;
   accentColor: string;
-  scale: number;
+  progress: number;
   crossProgress: number;
-}> = ({ ref_, accentColor, scale, crossProgress }) => (
+}> = ({ ref_, accentColor, progress, crossProgress }) => (
   <div
     style={{
-      transform: `scale(${scale})`,
+      opacity: progress,
+      transform: `scale(${progress}) translateY(${(1 - progress) * 24}px)`,
       display: "flex",
       flexDirection: "column",
       alignItems: "center",

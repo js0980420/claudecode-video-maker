@@ -1,5 +1,5 @@
 import React from "react";
-import { spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { spring, useCurrentFrame, useVideoConfig, interpolate, Easing } from "remotion";
 import { SceneVisual } from "../../types";
 import { Icon } from "../../icons";
 import { BLACK, WHITE } from "../../constants";
@@ -18,16 +18,34 @@ export const PhoneCTA: React.FC<Props> = ({
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const phonePop = spring({ frame: frame - 8, fps, config: { damping: 12 } });
+  // #3 stagger: phone → notif → cta,Back easing
+  const phoneP = interpolate(Math.max(0, frame - 8), [0, 20], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.out(Easing.back(1.3)),
+  });
   const notifPop = spring({ frame: frame - 24, fps, config: { damping: 10 } });
-  const ctaPop = spring({ frame: frame - 40, fps, config: { damping: 12 } });
+  const ctaP = interpolate(Math.max(0, frame - 40), [0, 20], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.out(Easing.back(1.3)),
+  });
 
   const pulse = 1 + Math.sin(frame / 6) * 0.04;
   const arrowShift = Math.sin(frame / 5) * 6;
 
+  // #5 CTA 按鈕 glow
+  const ctaGlow = 10 + Math.sin(frame / 12) * 5;
+
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 50 }}>
-      <div style={{ transform: `scale(${phonePop})`, position: "relative" }}>
+      <div
+        style={{
+          opacity: phoneP,
+          transform: `scale(${phoneP}) translateY(${(1 - phoneP) * 24}px)`,
+          position: "relative",
+        }}
+      >
         <Icon
           ref_={{ kind: "builtin", name: "phone" }}
           color={BLACK}
@@ -99,7 +117,8 @@ export const PhoneCTA: React.FC<Props> = ({
 
       <div
         style={{
-          transform: `scale(${ctaPop * pulse})`,
+          transform: `scale(${ctaP * pulse}) translateY(${(1 - ctaP) * 24}px)`,
+          opacity: ctaP,
           background: accentColor,
           color: WHITE,
           padding: "22px 40px",
@@ -108,6 +127,7 @@ export const PhoneCTA: React.FC<Props> = ({
           fontWeight: 900,
           letterSpacing: 2,
           boxShadow: `6px 6px 0 ${BLACK}`,
+          filter: `drop-shadow(0 0 ${ctaGlow}px ${accentColor}AA)`,
         }}
       >
         {ctaText}

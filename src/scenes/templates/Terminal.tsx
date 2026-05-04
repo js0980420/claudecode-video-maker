@@ -1,5 +1,5 @@
 import React from "react";
-import { spring, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
+import { useCurrentFrame, interpolate, Easing } from "remotion";
 import { SceneVisual } from "../../types";
 import { BLACK, FONT_FAMILY, WHITE } from "../../constants";
 
@@ -12,12 +12,12 @@ const PAUSE_BETWEEN_LINES = 4;
 
 export const Terminal: React.FC<Props> = ({ appName, lines, accentColor }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
 
-  const containerPop = spring({
-    frame: frame - 10,
-    fps,
-    config: { damping: 14 },
+  // #3 stagger: 容器整體以 Back easing 進場
+  const containerP = interpolate(Math.max(0, frame - 10), [0, 22], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.out(Easing.back(1.2)),
   });
 
   const caret = Math.floor(frame / 8) % 2;
@@ -35,10 +35,14 @@ export const Terminal: React.FC<Props> = ({ appName, lines, accentColor }) => {
     return { progress, line };
   });
 
+  // #5 游標 glow
+  const caretGlow = 8 + Math.sin(frame / 10) * 4;
+
   return (
     <div
       style={{
-        transform: `scale(${containerPop})`,
+        opacity: containerP,
+        transform: `scale(${containerP}) translateY(${(1 - containerP) * 24}px)`,
         width: 880,
         background: WHITE,
         border: `6px solid ${BLACK}`,
@@ -95,7 +99,7 @@ export const Terminal: React.FC<Props> = ({ appName, lines, accentColor }) => {
                     {visible}
                   </span>
                   {stillTyping && caret ? (
-                    <span style={{ color: BLACK }}>▌</span>
+                    <span style={{ color: BLACK, filter: `drop-shadow(0 0 ${caretGlow}px ${BLACK})` }}>▌</span>
                   ) : null}
                 </>
               ) : null}

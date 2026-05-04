@@ -1,9 +1,8 @@
 import React from "react";
 import {
-  spring,
   useCurrentFrame,
-  useVideoConfig,
   interpolate,
+  Easing,
 } from "remotion";
 import { SceneConfig, VideoContent } from "../types";
 import { SceneLayout } from "./SceneLayout";
@@ -31,22 +30,23 @@ export const SceneRenderer: React.FC<Props> = ({
   brand,
 }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
 
-  const titleSpring = spring({
-    frame,
-    fps,
-    config: { damping: 14, mass: 0.6 },
-  });
+  // #3 stagger: title(delay 0) / visual(delay 4) / desc(delay 8),Back easing
+  function staggerSlide(delay: number) {
+    const f = Math.max(0, frame - delay);
+    return interpolate(f, [0, 18], [0, 1], {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+      easing: Easing.out(Easing.back(1.3)),
+    });
+  }
 
-  // Description fades in late, scaled to scene length so short scenes
-  // still get a visible reveal.
-  const descStart = Math.min(36, Math.max(20, sceneDuration * 0.45));
-  const descEnd = descStart + 14;
-  const descOpacity = interpolate(frame, [descStart, descEnd], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  const titleP = staggerSlide(0);
+  const visualP = staggerSlide(4);
+  const descP = staggerSlide(8);
+
+  // #5 title glow:呼吸式 drop-shadow
+  const glow = 12 + Math.sin(frame / 15) * 6;
 
   return (
     <SceneLayout
@@ -71,22 +71,31 @@ export const SceneRenderer: React.FC<Props> = ({
             fontSize: scene.visual.type === "centerText" ? 96 : 72,
             fontWeight: 900,
             letterSpacing: 2,
-            opacity: titleSpring,
-            transform: `translateY(${(1 - titleSpring) * -24}px)`,
+            opacity: titleP,
+            transform: `translateY(${(1 - titleP) * 24}px)`,
             textAlign: "center",
             lineHeight: 1.15,
+            filter: `drop-shadow(0 0 ${glow}px ${brand.primaryColor}AA)`,
           }}
         >
           {parseHighlights(scene.title, brand.primaryColor)}
         </div>
 
-        <VisualSlot scene={scene} accentColor={brand.primaryColor} />
+        <div
+          style={{
+            opacity: visualP,
+            transform: `translateY(${(1 - visualP) * 24}px)`,
+          }}
+        >
+          <VisualSlot scene={scene} accentColor={brand.primaryColor} />
+        </div>
 
         {scene.description ? (
           <div
             style={{
               fontSize: scene.visual.type === "centerText" ? 36 : 30,
-              opacity: descOpacity,
+              opacity: descP,
+              transform: `translateY(${(1 - descP) * 24}px)`,
               color: BLACK,
               textAlign: "center",
             }}

@@ -22,14 +22,36 @@ export const SceneLayout: React.FC<{
   const fadeIn = interpolate(frame, [0, 8], [0, 1], {
     extrapolateRight: "clamp",
   });
-  const fadeOut = interpolate(
+
+  // #4 出場:scale 縮小 + opacity 淡出 + blur 模糊
+  const outProgress = interpolate(
     frame,
-    [safeDuration - 12, safeDuration],
-    [1, 0],
-    { extrapolateLeft: "clamp" },
+    [safeDuration - 13, safeDuration],
+    [0, 1],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
   );
+  const fadeOut = 1 - outProgress;
+  const outScale = interpolate(outProgress, [0, 1], [1, 0.96], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const outBlur = interpolate(outProgress, [0, 1], [0, 6], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
   const opacity = Math.min(fadeIn, fadeOut);
+
+  // #1 ambient 動態背景:中心點緩慢繞圓
+  const cx = 50 + Math.sin(frame / 90) * 8;
+  const cy = 50 + Math.cos(frame / 110) * 6;
+  const ambientBg = `radial-gradient(circle at ${cx}% ${cy}%, ${brand.primaryColor}0F 0%, transparent 65%)`;
+
+  // #2 Ken Burns:children wrapper 從 1.0 → 1.04
+  const kenBurns = interpolate(frame, [0, safeDuration], [1.0, 1.04], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
   return (
     <AbsoluteFill
@@ -38,9 +60,24 @@ export const SceneLayout: React.FC<{
         color: BLACK,
         fontFamily: FONT_FAMILY,
         opacity,
+        transform: `scale(${outScale})`,
+        filter: outBlur > 0 ? `blur(${outBlur}px)` : undefined,
       }}
     >
-      {children}
+      {/* #1 ambient 背景層 */}
+      <AbsoluteFill style={{ background: ambientBg, pointerEvents: "none" }} />
+
+      {/* #2 Ken Burns wrapper — 只包 children,不包頁碼/brand */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          transform: `scale(${kenBurns})`,
+          transformOrigin: "center center",
+        }}
+      >
+        {children}
+      </div>
       <div
         style={{
           position: "absolute",
