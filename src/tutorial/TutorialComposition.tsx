@@ -54,7 +54,7 @@ const TutorialAmbientBg: React.FC = () => {
   const bg = `radial-gradient(circle at ${cx}% ${cy}%, ${ACCENT_COLOR}0A 0%, transparent 60%)`;
   return (
     <AbsoluteFill
-      style={{ background: bg, pointerEvents: "none", zIndex: 0 }}
+      style={{ background: bg, pointerEvents: "none", zIndex: 0, willChange: "background", transform: "translateZ(0)" }}
     />
   );
 };

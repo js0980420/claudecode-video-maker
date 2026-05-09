@@ -21,6 +21,7 @@ export const Paragraph: React.FC<Props> = ({ block, accentColor }) => (
       // 時,wrapper justifyContent center 會把短句往右偏、長句往左偏 → 列點歪斜。
       width: "100%",
       maxWidth: 1400,
+      WebkitFontSmoothing: "antialiased",
     }}
   >
     <MarkdownLite text={block.text} accentColor={accentColor} />
