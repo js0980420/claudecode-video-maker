@@ -13,11 +13,11 @@ function useAppear(frame: number, start: number, overshoot = 1.3) {
     extrapolateLeft: "clamp", extrapolateRight: "clamp",
     easing: Easing.out(Easing.back(overshoot)),
   });
-  const scale = interpolate(frame, [start, start + FADE], [0.75, 1], {
+  const ty = Math.round(interpolate(frame, [start, start + FADE], [14, 0], {
     extrapolateLeft: "clamp", extrapolateRight: "clamp",
     easing: Easing.out(Easing.back(overshoot)),
-  });
-  return { opacity: p, transform: `scale(${scale})` };
+  }));
+  return { opacity: p, transform: `translateY(${ty}px)` };
 }
 
 const ClaudeCodeLogo: React.FC<{ size: number }> = ({ size }) => (
@@ -231,12 +231,12 @@ export const ChatDiagramBlock: React.FC<Props> = ({ block, revealFrame = 0 }) =>
             extrapolateLeft: "clamp", extrapolateRight: "clamp",
             easing: Easing.out(Easing.back(1.4)),
           });
-          const chipScale = interpolate(frame, [chipStart, chipStart + FADE], [0.7, 1], {
+          const chipTy = Math.round(interpolate(frame, [chipStart, chipStart + FADE], [10, 0], {
             extrapolateLeft: "clamp", extrapolateRight: "clamp",
             easing: Easing.out(Easing.back(1.4)),
-          });
+          }));
           return (
-            <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, background: "#FEF2F2", border: "1.5px solid #FECACA", borderRadius: 10, padding: "8px 18px", fontSize: 20, color: "#DC2626", opacity: chipP, transform: `scale(${chipScale})` }}>
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, background: "#FEF2F2", border: "1.5px solid #FECACA", borderRadius: 10, padding: "8px 18px", fontSize: 20, color: "#DC2626", opacity: chipP, transform: `translateY(${chipTy}px)` }}>
               <span>✗</span>
               <span>{item}</span>
             </div>

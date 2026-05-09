@@ -46,10 +46,10 @@ export const SkillGridBlock: React.FC<Props> = ({ block, accentColor, revealFram
                   extrapolateLeft: "clamp", extrapolateRight: "clamp",
                   easing: Easing.out(Easing.back(1.4)),
                 });
-                const chipScale = interpolate(frame, [chipStart, chipStart + FADE], [0.7, 1], {
+                const chipTy = Math.round(interpolate(frame, [chipStart, chipStart + FADE], [10, 0], {
                   extrapolateLeft: "clamp", extrapolateRight: "clamp",
                   easing: Easing.out(Easing.back(1.4)),
-                });
+                }));
                 return (
                   <div
                     key={j}
@@ -60,8 +60,7 @@ export const SkillGridBlock: React.FC<Props> = ({ block, accentColor, revealFram
                       fontFamily: `"SF Mono", "Menlo", "Consolas", monospace`,
                       border: `1px solid ${accentColor}44`,
                       opacity: chipP,
-                      transform: `scale(${chipScale})`,
-                      transformOrigin: "left center",
+                      transform: `translateY(${chipTy}px)`,
                     }}
                   >
                     {skill}
