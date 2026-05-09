@@ -193,6 +193,8 @@ const PageContent: React.FC<{
         fontFamily: FONT_FAMILY,
         color: BLACK,
         boxSizing: "border-box",
+        // 9:16 justifyContent:center 會產生 x.5px 垂直位移，強制 GPU layer 對齊整數像素
+        transform: "translateZ(0)",
       }}
     >
       {watermark ? <WatermarkOverlay watermark={watermark} /> : null}
