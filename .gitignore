@@ -67,3 +67,9 @@ public/screenshots/**/steps.raw.json
 # Per-video mask config(每支教學自己的截圖個資遮罩配置,屬 per-video content)
 scripts/mask-tutorial-images.config.json
 !scripts/mask-tutorial-images.config.example.json
+
+# 發片工作流草稿(每支影片各自生成,不需 git 追蹤)
+instagram-caption.md
+threads-post.md
+youtube-description.md
+publish-plan.md
