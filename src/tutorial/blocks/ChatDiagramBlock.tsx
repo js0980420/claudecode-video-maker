@@ -2,6 +2,7 @@ import React from "react";
 import { Easing, Img, interpolate, staticFile, useCurrentFrame } from "remotion";
 import { ChatDiagramBlock as ChatDiagramBlockType } from "../types";
 import { BLACK, FONT_FAMILY } from "../../constants";
+import { useTypingChars, TypingCursor } from "../TypingText";
 
 type Props = { block: ChatDiagramBlockType; revealFrame?: number };
 
@@ -60,6 +61,33 @@ const InfraIcons: React.FC = () => (
   </div>
 );
 
+// 語音泡打字元件：泡泡淡入後文字逐字打出
+const SPEECH_RATE = 0.85; // chars/frame — 中文打字手感
+const SpeechBubble: React.FC<{ message: string; bubbleStart: number; frame: number }> = ({
+  message, bubbleStart, frame,
+}) => {
+  // 泡泡出現後 4 幀開始打字（讓泡泡先浮出）
+  const typingStart = bubbleStart + 4;
+  const { shown, isTyping } = useTypingChars(message, typingStart, SPEECH_RATE);
+  const doneAt = typingStart + message.length / SPEECH_RATE;
+  const bubbleAppear = useAppear(frame, bubbleStart);
+  return (
+    <div
+      style={{
+        flex: 1, background: "#F8FAFC",
+        border: "2px solid #E2E8F0", borderRadius: 20,
+        padding: "18px 28px", fontSize: 28, fontWeight: 600,
+        color: BLACK, lineHeight: 1.5,
+        ...bubbleAppear,
+      }}
+    >
+      「{shown}
+      <TypingCursor isTyping={isTyping} doneAt={doneAt} color="#64748B" height="0.85em" />
+      {!isTyping ? "」" : ""}
+    </div>
+  );
+};
+
 export const ChatDiagramBlock: React.FC<Props> = ({ block, revealFrame = 0 }) => {
   const frame = useCurrentFrame();
 
@@ -75,9 +103,7 @@ export const ChatDiagramBlock: React.FC<Props> = ({ block, revealFrame = 0 }) =>
 
         <ArrowSVG frame={frame} start={t(6)} />
 
-        <div style={{ flex: 1, background: "#F8FAFC", border: "2px solid #E2E8F0", borderRadius: 20, padding: "18px 28px", fontSize: 28, fontWeight: 600, color: BLACK, lineHeight: 1.5, ...useAppear(frame, t(10)) }}>
-          「{block.message}」
-        </div>
+        <SpeechBubble message={block.message} bubbleStart={t(10)} frame={frame} />
 
         <ArrowSVG frame={frame} start={t(18)} />
 

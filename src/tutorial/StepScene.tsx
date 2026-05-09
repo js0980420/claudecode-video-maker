@@ -255,7 +255,7 @@ const BlockRenderer: React.FC<{ block: Block; accentColor: string; revealFrame: 
   switch (block.type) {
     case "paragraph": return <Paragraph block={block} accentColor={accentColor} />;
     case "image":     return <ImageBlock block={block} />;
-    case "code":      return <CodeBlock block={block} accentColor={accentColor} />;
+    case "code":      return <CodeBlock block={block} accentColor={accentColor} revealFrame={revealFrame} />;
     case "callout":          return <CalloutBlock block={block} accentColor={accentColor} />;
     case "comparisonTable":  return <ComparisonTableBlock block={block} accentColor={accentColor} revealFrame={revealFrame} />;
     case "featureCards":     return <FeatureCardsBlock block={block} accentColor={accentColor} revealFrame={revealFrame} />;
