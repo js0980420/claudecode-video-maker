@@ -31,6 +31,19 @@ export type FeatureCardsBlock = {
 export type SkillCategory = { name: string; skills: string[] };
 export type SkillGridBlock = { type: "skillGrid"; categories: SkillCategory[] };
 
+export type ChatDiagramBlock =
+  | {
+      type: "chatDiagram";
+      variant: "chat-fail";  // 人說話 → Claude Code → ✗
+      message: string;
+      resultText: string;
+    }
+  | {
+      type: "chatDiagram";
+      variant: "no-access";  // Claude Code → ⛔ → 雲端基礎設施
+      items: string[];        // 無法存取的項目清單
+    };
+
 export type Block =
   | ParagraphBlock
   | ImageBlock
@@ -39,7 +52,8 @@ export type Block =
   | PageBreakBlock
   | ComparisonTableBlock
   | FeatureCardsBlock
-  | SkillGridBlock;
+  | SkillGridBlock
+  | ChatDiagramBlock;
 
 export type TutorialStep = {
   id: string;

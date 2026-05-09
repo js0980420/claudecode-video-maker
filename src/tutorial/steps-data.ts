@@ -1,4 +1,4 @@
-import { TutorialData, TutorialStep, Block, ComparisonRow, FeatureCard, SkillCategory } from "./types";
+import { TutorialData, TutorialStep, Block, ComparisonRow, FeatureCard, SkillCategory, ChatDiagramBlock } from "./types";
 
 function parseBlock(raw: unknown, ctx: string): Block {
   if (!raw || typeof raw !== "object") {
@@ -104,6 +104,19 @@ function parseBlock(raw: unknown, ctx: string): Block {
       return { name: c.name as string, skills: (c.skills as unknown[]).map(String) };
     });
     return { type: "skillGrid", categories };
+  }
+  if (t === "chatDiagram") {
+    const variant = b.variant;
+    if (variant === "chat-fail") {
+      if (typeof b.message !== "string") throw new Error(`${ctx}: chatDiagram(chat-fail).message must be string`);
+      if (typeof b.resultText !== "string") throw new Error(`${ctx}: chatDiagram(chat-fail).resultText must be string`);
+      return { type: "chatDiagram", variant: "chat-fail", message: b.message as string, resultText: b.resultText as string } satisfies ChatDiagramBlock;
+    }
+    if (variant === "no-access") {
+      if (!Array.isArray(b.items)) throw new Error(`${ctx}: chatDiagram(no-access).items must be array`);
+      return { type: "chatDiagram", variant: "no-access", items: (b.items as unknown[]).map(String) } satisfies ChatDiagramBlock;
+    }
+    throw new Error(`${ctx}: chatDiagram.variant must be "chat-fail" or "no-access"`);
   }
   throw new Error(`${ctx}: unknown block type: ${String(t)}`);
 }

@@ -18,6 +18,7 @@ import { CalloutBlock } from "./blocks/CalloutBlock";
 import { ComparisonTableBlock } from "./blocks/ComparisonTableBlock";
 import { FeatureCardsBlock } from "./blocks/FeatureCardsBlock";
 import { SkillGridBlock } from "./blocks/SkillGridBlock";
+import { ChatDiagramBlock } from "./blocks/ChatDiagramBlock";
 import { BLACK, FONT_FAMILY, WHITE } from "../constants";
 
 type Props = {
@@ -258,6 +259,7 @@ const BlockRenderer: React.FC<{ block: Block; accentColor: string }> = ({
     case "comparisonTable":  return <ComparisonTableBlock block={block} accentColor={accentColor} />;
     case "featureCards":     return <FeatureCardsBlock block={block} accentColor={accentColor} />;
     case "skillGrid":        return <SkillGridBlock block={block} accentColor={accentColor} />;
+    case "chatDiagram":      return <ChatDiagramBlock block={block} />;
     case "pageBreak":        return null; // 不該走到這裡(splitIntoPages 已過濾)
   }
 };
