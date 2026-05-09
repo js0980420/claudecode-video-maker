@@ -202,7 +202,7 @@ const PageContent: React.FC<{
           fontSize: 56,
           fontWeight: 900,
           opacity: titleSpring,
-          transform: `translateY(${(1 - titleSpring) * -20}px)`,
+          transform: `translateY(${Math.round((1 - titleSpring) * -20)}px)`,
           textAlign: "left",
           lineHeight: 1.2,
           width: "100%",
@@ -245,7 +245,7 @@ const PageContent: React.FC<{
             key={i}
             style={{
               opacity,
-              transform: `translateY(${translateY}px)`,
+              transform: `translateY(${Math.round(translateY)}px)`,
               width: "100%",
               display: "flex",
               justifyContent: indentParagraph ? "flex-start" : "center",
