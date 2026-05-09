@@ -1,5 +1,5 @@
 import React from "react";
-import { AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame } from "remotion";
+import { AbsoluteFill, Audio, Sequence, staticFile } from "remotion";
 import { TutorialData, TutorialStep } from "./types";
 import { StepScene, stepDurationFrames, splitIntoPages } from "./StepScene";
 import { IntroScene, INTRO_DURATION_FRAMES } from "./IntroScene";
@@ -46,19 +46,6 @@ export type TutorialCompositionProps = {
   data: TutorialData;
 };
 
-// #1 教學版 ambient 背景元件(極淡,不干擾文字)
-const TutorialAmbientBg: React.FC = () => {
-  const frame = useCurrentFrame();
-  const cx = 50 + Math.sin(frame / 180) * 6;
-  const cy = 50 + Math.cos(frame / 220) * 5;
-  const bg = `radial-gradient(circle at ${cx}% ${cy}%, ${ACCENT_COLOR}0A 0%, transparent 60%)`;
-  return (
-    <AbsoluteFill
-      style={{ background: bg, pointerEvents: "none", zIndex: 0, willChange: "background", transform: "translateZ(0)" }}
-    />
-  );
-};
-
 export const TutorialComposition: React.FC<TutorialCompositionProps> = ({
   data,
 }) => {
@@ -66,9 +53,6 @@ export const TutorialComposition: React.FC<TutorialCompositionProps> = ({
   let cursor = introDur;
   return (
     <AbsoluteFill style={{ background: WHITE, position: "relative" }}>
-      {/* #1 ambient 動態背景(最底層) */}
-      <TutorialAmbientBg />
-
       {/* BGM 鋪底,整段迴圈 */}
       <Audio src={staticFile("music/bgm.mp3")} loop volume={0.2} />
 

@@ -6,7 +6,6 @@ import {
   Img,
   Sequence,
   interpolate,
-  spring,
   staticFile,
   useCurrentFrame,
   useVideoConfig,
@@ -159,14 +158,17 @@ const PageContent: React.FC<{
   watermark?: Watermark;
 }> = ({ title, blocks, accentColor, watermark }) => {
   const frame = useCurrentFrame();
-  const { fps, width, height } = useVideoConfig();
+  const { width, height } = useVideoConfig();
   // 9:16 直式時內容垂直置中(blocks 在 1920 高容器內居中,不下方留 1200px 空白)
   const isReel = height > width;
 
-  const titleSpring = spring({
-    frame,
-    fps,
-    config: { damping: 14, mass: 0.6 },
+  // interpolate 比 spring 好:spring 數學上永遠輕微振盪,每幀都是新值觸發 repaint,
+  // 導致同一 stacking context 內的文字 sub-pixel 渲染抖動。interpolate 在
+  // HEAD_DELAY_FRAMES 後輸出 exactly 1.0,不再觸發任何重繪。
+  const titleProgress = interpolate(frame, [0, HEAD_DELAY_FRAMES], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
   });
 
   // block 的 reveal 時機加上 HEAD_DELAY,跟音訊起點對齊。
@@ -201,8 +203,8 @@ const PageContent: React.FC<{
         style={{
           fontSize: 56,
           fontWeight: 900,
-          opacity: titleSpring,
-          transform: `translateY(${Math.round((1 - titleSpring) * -20)}px)`,
+          opacity: titleProgress,
+          transform: `translateY(${Math.round((1 - titleProgress) * -20)}px)`,
           textAlign: "left",
           lineHeight: 1.2,
           width: "100%",
