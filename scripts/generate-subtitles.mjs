@@ -115,7 +115,7 @@ function splitSentences(text) {
     } else if (ch === "]") {
       inBracket = false;
       current += ch;
-    } else if (!inBracket && "，。？！；".includes(ch)) {
+    } else if (!inBracket && "，。？！；、".includes(ch)) {
       current += ch;
       // 移除行尾 ，。，保留 ？！：...、
       const display = current.trim().replace(/[，。]\s*$/, "");

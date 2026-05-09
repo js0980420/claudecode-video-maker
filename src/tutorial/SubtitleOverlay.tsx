@@ -34,12 +34,12 @@ function splitIntoSentences(text: string): string[] {
     return PLACEHOLDER;
   });
 
-  // CC 風格：按 ，。？！；切句，每句獨立顯示
+  // CC 風格：按 ，。？！；、切句，每句獨立顯示
   const parts: string[] = [];
   let cur = "";
   for (const ch of safe) {
     cur += ch;
-    if ("，。？！；".includes(ch)) {
+    if ("，。？！；、".includes(ch)) {
       const t = cur.trim();
       if (t) parts.push(t);
       cur = "";
