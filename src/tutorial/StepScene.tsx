@@ -2,12 +2,9 @@ import React from "react";
 import {
   AbsoluteFill,
   Audio,
-  Easing,
   Img,
   Sequence,
-  interpolate,
   staticFile,
-  useCurrentFrame,
   useVideoConfig,
 } from "remotion";
 import { Block, TutorialStep, Watermark } from "./types";
@@ -157,25 +154,8 @@ const PageContent: React.FC<{
   accentColor: string;
   watermark?: Watermark;
 }> = ({ title, blocks, accentColor, watermark }) => {
-  const frame = useCurrentFrame();
   const { width, height } = useVideoConfig();
-  // 9:16 直式時內容垂直置中(blocks 在 1920 高容器內居中,不下方留 1200px 空白)
   const isReel = height > width;
-
-  // interpolate 比 spring 好:spring 數學上永遠輕微振盪,每幀都是新值觸發 repaint,
-  // 導致同一 stacking context 內的文字 sub-pixel 渲染抖動。interpolate 在
-  // HEAD_DELAY_FRAMES 後輸出 exactly 1.0,不再觸發任何重繪。
-  const titleProgress = interpolate(frame, [0, HEAD_DELAY_FRAMES], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: Easing.out(Easing.cubic),
-  });
-
-  // block 的 reveal 時機加上 HEAD_DELAY,跟音訊起點對齊。
-  // title 不延遲(spring 從 frame 0 跑),所以換頁時先看到標題定下來再 reveal blocks。
-  const blockTimings = blocks.map((_, i) => ({
-    from: HEAD_DELAY_FRAMES + START_OFFSET_FRAMES + i * STAGGER_FRAMES,
-  }));
 
   return (
     <div
@@ -187,8 +167,6 @@ const PageContent: React.FC<{
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        // 直式時 main axis(vertical)居中內容,消除下方空白;
-        // 橫式維持 flex-start 從上而下(原 layout 不破壞)
         justifyContent: isReel ? "center" : "flex-start",
         padding: "48px 64px",
         gap: 24,
@@ -203,8 +181,6 @@ const PageContent: React.FC<{
         style={{
           fontSize: 56,
           fontWeight: 900,
-          opacity: titleProgress,
-          transform: `translateY(${Math.round((1 - titleProgress) * -20)}px)`,
           textAlign: "left",
           lineHeight: 1.2,
           width: "100%",
@@ -215,39 +191,12 @@ const PageContent: React.FC<{
       </div>
 
       {blocks.map((block, i) => {
-        const { from } = blockTimings[i];
-        // #3 stagger: Back easing 進場(opacity + translateY 24→0)
-        const opacity = interpolate(
-          frame,
-          [from, from + FADE_IN_FRAMES],
-          [0, 1],
-          {
-            extrapolateLeft: "clamp",
-            extrapolateRight: "clamp",
-            easing: Easing.out(Easing.back(1.2)),
-          },
-        );
-        const translateY = interpolate(
-          frame,
-          [from, from + FADE_IN_FRAMES],
-          [24, 0],
-          {
-            extrapolateLeft: "clamp",
-            extrapolateRight: "clamp",
-            easing: Easing.out(Easing.back(1.2)),
-          },
-        );
-        // paragraph(列點)在 9:16 直式才縮排 60px(列點 1/2/3/4 對齊在縮排位置);
-        // 16:9 橫式維持居中(避免 paragraph 貼左、右側留大空白「跑到外面」感)。
-        // callout / code / image 始終居中。
         const isParagraph = block.type === "paragraph";
         const indentParagraph = isParagraph && isReel;
         return (
           <div
             key={i}
             style={{
-              opacity,
-              transform: `translateY(${Math.round(translateY)}px)`,
               width: "100%",
               display: "flex",
               justifyContent: indentParagraph ? "flex-start" : "center",
