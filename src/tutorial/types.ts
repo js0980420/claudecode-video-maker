@@ -22,7 +22,11 @@ export type ComparisonRow = { label: string; before: string; after: string };
 export type ComparisonTableBlock = { type: "comparisonTable"; rows: ComparisonRow[] };
 
 export type FeatureCard = { icon: string; title: string; desc?: string };
-export type FeatureCardsBlock = { type: "featureCards"; cards: FeatureCard[] };
+export type FeatureCardsBlock = {
+  type: "featureCards";
+  cards: FeatureCard[];
+  layout?: "grid" | "list"; // list = 1 欄橫排，icon 左 + title/desc 右；grid = 多欄網格（預設）
+};
 
 export type SkillCategory = { name: string; skills: string[] };
 export type SkillGridBlock = { type: "skillGrid"; categories: SkillCategory[] };

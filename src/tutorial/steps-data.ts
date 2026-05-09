@@ -83,7 +83,11 @@ function parseBlock(raw: unknown, ctx: string): Block {
         ...(typeof card.desc === "string" ? { desc: card.desc } : {}),
       };
     });
-    return { type: "featureCards", cards };
+    const layout = b.layout;
+    if (layout !== undefined && layout !== "grid" && layout !== "list") {
+      throw new Error(`${ctx}: featureCards.layout must be "grid" or "list"`);
+    }
+    return { type: "featureCards", cards, ...(layout ? { layout } : {}) };
   }
   if (t === "skillGrid") {
     if (!Array.isArray(b.categories) || b.categories.length === 0) {
