@@ -115,10 +115,11 @@ function splitSentences(text) {
     } else if (ch === "]") {
       inBracket = false;
       current += ch;
-    } else if (!inBracket && (ch === "，" || ch === "。")) {
+    } else if (!inBracket && "，。？！；".includes(ch)) {
       current += ch;
-      const t = current.trim();
-      if (t.length > 0) sentences.push(t);
+      // 移除行尾 ，。，保留 ？！：...、
+      const display = current.trim().replace(/[，。]\s*$/, "");
+      if (display.length > 0) sentences.push(display);
       current = "";
     } else {
       current += ch;

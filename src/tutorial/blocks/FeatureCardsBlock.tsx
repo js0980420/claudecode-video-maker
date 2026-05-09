@@ -69,10 +69,10 @@ export const FeatureCardsBlock: React.FC<Props> = ({ block, accentColor, revealF
           extrapolateLeft: "clamp", extrapolateRight: "clamp",
           easing: Easing.out(Easing.back(1.3)),
         });
-        const scale = interpolate(frame, [start, start + FADE], [0.82, 1], {
+        const ty = Math.round(interpolate(frame, [start, start + FADE], [20, 0], {
           extrapolateLeft: "clamp", extrapolateRight: "clamp",
           easing: Easing.out(Easing.back(1.3)),
-        });
+        }));
         return (
           <div
             key={i}
@@ -84,7 +84,7 @@ export const FeatureCardsBlock: React.FC<Props> = ({ block, accentColor, revealF
               borderRadius: 20,
               boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
               opacity: p,
-              transform: `scale(${scale})`,
+              transform: `translateY(${ty}px)`,
             }}
           >
             <div style={{ fontSize: 48, lineHeight: 1 }}>{card.icon}</div>
