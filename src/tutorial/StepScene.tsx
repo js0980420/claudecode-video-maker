@@ -239,7 +239,7 @@ const PageContent: React.FC<{
               boxSizing: "border-box",
             }}
           >
-            <BlockRenderer block={block} accentColor={accentColor} />
+            <BlockRenderer block={block} accentColor={accentColor} revealFrame={from} />
           </div>
         );
       })}
@@ -247,19 +247,20 @@ const PageContent: React.FC<{
   );
 };
 
-const BlockRenderer: React.FC<{ block: Block; accentColor: string }> = ({
+const BlockRenderer: React.FC<{ block: Block; accentColor: string; revealFrame: number }> = ({
   block,
   accentColor,
+  revealFrame,
 }) => {
   switch (block.type) {
     case "paragraph": return <Paragraph block={block} accentColor={accentColor} />;
     case "image":     return <ImageBlock block={block} />;
     case "code":      return <CodeBlock block={block} accentColor={accentColor} />;
     case "callout":          return <CalloutBlock block={block} accentColor={accentColor} />;
-    case "comparisonTable":  return <ComparisonTableBlock block={block} accentColor={accentColor} />;
-    case "featureCards":     return <FeatureCardsBlock block={block} accentColor={accentColor} />;
-    case "skillGrid":        return <SkillGridBlock block={block} accentColor={accentColor} />;
-    case "chatDiagram":      return <ChatDiagramBlock block={block} />;
+    case "comparisonTable":  return <ComparisonTableBlock block={block} accentColor={accentColor} revealFrame={revealFrame} />;
+    case "featureCards":     return <FeatureCardsBlock block={block} accentColor={accentColor} revealFrame={revealFrame} />;
+    case "skillGrid":        return <SkillGridBlock block={block} accentColor={accentColor} revealFrame={revealFrame} />;
+    case "chatDiagram":      return <ChatDiagramBlock block={block} revealFrame={revealFrame} />;
     case "pageBreak":        return null; // 不該走到這裡(splitIntoPages 已過濾)
   }
 };

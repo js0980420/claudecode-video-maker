@@ -1,9 +1,23 @@
 import React from "react";
-import { Img, staticFile } from "remotion";
+import { Easing, Img, interpolate, staticFile, useCurrentFrame } from "remotion";
 import { ChatDiagramBlock as ChatDiagramBlockType } from "../types";
 import { BLACK, FONT_FAMILY } from "../../constants";
 
-type Props = { block: ChatDiagramBlockType };
+type Props = { block: ChatDiagramBlockType; revealFrame?: number };
+
+const FADE = 12;
+
+function useAppear(frame: number, start: number, overshoot = 1.3) {
+  const p = interpolate(frame, [start, start + FADE], [0, 1], {
+    extrapolateLeft: "clamp", extrapolateRight: "clamp",
+    easing: Easing.out(Easing.back(overshoot)),
+  });
+  const scale = interpolate(frame, [start, start + FADE], [0.75, 1], {
+    extrapolateLeft: "clamp", extrapolateRight: "clamp",
+    easing: Easing.out(Easing.back(overshoot)),
+  });
+  return { opacity: p, transform: `scale(${scale})` };
+}
 
 const ClaudeCodeLogo: React.FC<{ size: number }> = ({ size }) => (
   <Img
@@ -19,20 +33,23 @@ const PersonSVG: React.FC<{ size: number }> = ({ size }) => (
   </svg>
 );
 
-const ArrowSVG: React.FC<{ color?: string }> = ({ color = "#CBD5E1" }) => (
-  <svg width="52" height="20" viewBox="0 0 52 20" fill="none" style={{ flexShrink: 0 }}>
-    <path d="M2 10H50M50 10L40 3M50 10L40 17" stroke={color} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
+const ArrowSVG: React.FC<{ color?: string; frame: number; start: number }> = ({ color = "#CBD5E1", frame, start }) => {
+  const p = interpolate(frame, [start, start + FADE], [0, 1], {
+    extrapolateLeft: "clamp", extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
+  });
+  return (
+    <svg width="52" height="20" viewBox="0 0 52 20" fill="none" style={{ flexShrink: 0, opacity: p }}>
+      <path d="M2 10H50M50 10L40 3M50 10L40 17" stroke={color} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+};
 
-// Cloud + Server icons for no-access variant
 const InfraIcons: React.FC = () => (
   <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
-    {/* Cloud */}
     <svg width="80" height="60" viewBox="0 0 80 60" fill="none">
       <path d="M60 48H22C12.1 48 4 39.9 4 30C4 20.1 12.1 12 22 12C22.7 12 23.4 12.1 24.1 12.2C27.2 6.1 33.6 2 41 2C51.5 2 60 10.5 60 21C60 21.3 60 21.6 60 22C65.5 23.3 70 28.2 70 34C70 41.7 65.7 48 60 48Z" fill="#E2E8F0" stroke="#94A3B8" strokeWidth="3" />
     </svg>
-    {/* Server */}
     <svg width="60" height="70" viewBox="0 0 60 70" fill="none">
       <rect x="4" y="4" width="52" height="20" rx="6" fill="#E2E8F0" stroke="#94A3B8" strokeWidth="3" />
       <circle cx="48" cy="14" r="4" fill="#94A3B8" />
@@ -43,126 +60,85 @@ const InfraIcons: React.FC = () => (
   </div>
 );
 
-// Blocked connection line with ⛔
-const BlockedArrow: React.FC = () => (
-  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, flexShrink: 0 }}>
-    <svg width="80" height="20" viewBox="0 0 80 20" fill="none">
-      <line x1="2" y1="10" x2="78" y2="10" stroke="#FCA5A5" strokeWidth="3" strokeDasharray="6 4" />
-    </svg>
-    <div style={{ fontSize: 36 }}>⛔</div>
-  </div>
-);
+export const ChatDiagramBlock: React.FC<Props> = ({ block, revealFrame = 0 }) => {
+  const frame = useCurrentFrame();
 
-export const ChatDiagramBlock: React.FC<Props> = ({ block }) => {
   if (block.variant === "chat-fail") {
+    // Sequential reveal: person(0) → arrow1(6) → bubble(10) → arrow2(18) → logo(22) → arrow3(30) → result(34)
+    const t = (offset: number) => revealFrame + offset;
     return (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 24,
-          width: "100%",
-          maxWidth: 1400,
-          fontFamily: FONT_FAMILY,
-          padding: "8px 0",
-        }}
-      >
-        {/* Person */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flexShrink: 0 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 24, width: "100%", maxWidth: 1400, fontFamily: FONT_FAMILY, padding: "8px 0" }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flexShrink: 0, ...useAppear(frame, t(0)) }}>
           <PersonSVG size={72} />
           <div style={{ fontSize: 18, color: "#94A3B8" }}>你</div>
         </div>
 
-        <ArrowSVG />
+        <ArrowSVG frame={frame} start={t(6)} />
 
-        {/* Speech bubble */}
-        <div
-          style={{
-            flex: 1,
-            background: "#F8FAFC",
-            border: "2px solid #E2E8F0",
-            borderRadius: 20,
-            padding: "18px 28px",
-            fontSize: 28,
-            fontWeight: 600,
-            color: BLACK,
-            lineHeight: 1.5,
-          }}
-        >
+        <div style={{ flex: 1, background: "#F8FAFC", border: "2px solid #E2E8F0", borderRadius: 20, padding: "18px 28px", fontSize: 28, fontWeight: 600, color: BLACK, lineHeight: 1.5, ...useAppear(frame, t(10)) }}>
           「{block.message}」
         </div>
 
-        <ArrowSVG />
+        <ArrowSVG frame={frame} start={t(18)} />
 
-        {/* Claude Code */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, flexShrink: 0 }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, flexShrink: 0, ...useAppear(frame, t(22)) }}>
           <ClaudeCodeLogo size={76} />
           <div style={{ fontSize: 17, color: "#64748B", fontWeight: 600, whiteSpace: "nowrap" }}>Claude Code</div>
         </div>
 
-        <ArrowSVG color="#FCA5A5" />
+        <ArrowSVG color="#FCA5A5" frame={frame} start={t(30)} />
 
-        {/* Result */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flexShrink: 0 }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flexShrink: 0, ...useAppear(frame, t(34), 1.5) }}>
           <div style={{ fontSize: 56, lineHeight: 1, color: "#EF4444" }}>✗</div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: "#EF4444", whiteSpace: "nowrap" }}>
-            {block.resultText}
-          </div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: "#EF4444", whiteSpace: "nowrap" }}>{block.resultText}</div>
         </div>
       </div>
     );
   }
 
-  // no-access variant
+  // no-access variant: logo(0) → blocked arrow(10) → infra(18) → chips stagger(28+)
+  const t = (offset: number) => revealFrame + offset;
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 16,
-        width: "100%",
-        maxWidth: 1400,
-        fontFamily: FONT_FAMILY,
-      }}
-    >
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, width: "100%", maxWidth: 1400, fontFamily: FONT_FAMILY }}>
       <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
-        {/* Claude Code */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, ...useAppear(frame, t(0)) }}>
           <ClaudeCodeLogo size={80} />
           <div style={{ fontSize: 17, color: "#64748B", fontWeight: 600 }}>Claude Code</div>
         </div>
 
-        <BlockedArrow />
+        {/* Blocked dashed line + ⛔ */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, flexShrink: 0, ...useAppear(frame, t(10)) }}>
+          <svg width="80" height="20" viewBox="0 0 80 20" fill="none">
+            <line x1="2" y1="10" x2="78" y2="10" stroke="#FCA5A5" strokeWidth="3" strokeDasharray="6 4" />
+          </svg>
+          <div style={{ fontSize: 36 }}>⛔</div>
+        </div>
 
-        {/* Cloud + Server */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, ...useAppear(frame, t(18)) }}>
           <InfraIcons />
           <div style={{ fontSize: 17, color: "#64748B", fontWeight: 600 }}>雲端基礎設施</div>
         </div>
       </div>
 
-      {/* No-access items */}
+      {/* No-access chips stagger in */}
       <div style={{ display: "flex", gap: 20, flexWrap: "wrap", justifyContent: "center" }}>
-        {block.items.map((item, i) => (
-          <div
-            key={i}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              background: "#FEF2F2",
-              border: "1.5px solid #FECACA",
-              borderRadius: 10,
-              padding: "8px 18px",
-              fontSize: 20,
-              color: "#DC2626",
-            }}
-          >
-            <span>✗</span>
-            <span>{item}</span>
-          </div>
-        ))}
+        {block.items.map((item, i) => {
+          const chipStart = t(28 + i * 8);
+          const chipP = interpolate(frame, [chipStart, chipStart + FADE], [0, 1], {
+            extrapolateLeft: "clamp", extrapolateRight: "clamp",
+            easing: Easing.out(Easing.back(1.4)),
+          });
+          const chipScale = interpolate(frame, [chipStart, chipStart + FADE], [0.7, 1], {
+            extrapolateLeft: "clamp", extrapolateRight: "clamp",
+            easing: Easing.out(Easing.back(1.4)),
+          });
+          return (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, background: "#FEF2F2", border: "1.5px solid #FECACA", borderRadius: 10, padding: "8px 18px", fontSize: 20, color: "#DC2626", opacity: chipP, transform: `scale(${chipScale})` }}>
+              <span>✗</span>
+              <span>{item}</span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
