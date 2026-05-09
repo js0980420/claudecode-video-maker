@@ -61,6 +61,86 @@ const InfraIcons: React.FC = () => (
   </div>
 );
 
+// 醒目結果特效：衝擊波擴散 + ✗ 強力彈入 + 文字滑上
+const ImpactResult: React.FC<{ resultText: string; start: number; frame: number }> = ({
+  resultText, start, frame,
+}) => {
+  // 衝擊波：迅速擴散 + 淡出
+  const ringScale = interpolate(frame, [start, start + 10], [0.2, 2.8], {
+    extrapolateLeft: "clamp", extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
+  });
+  const ringOpacity = interpolate(frame, [start, start + 14], [0.7, 0], {
+    extrapolateLeft: "clamp", extrapolateRight: "clamp",
+    easing: Easing.out(Easing.quad),
+  });
+
+  // ✗ 超大 overshoot 砰！進場（back 5.5 = 縮放到 1.4x 再彈回）
+  const xScale = interpolate(frame, [start, start + 11], [0, 1], {
+    extrapolateLeft: "clamp", extrapolateRight: "clamp",
+    easing: Easing.out(Easing.back(5.5)),
+  });
+  const xOpacity = interpolate(frame, [start, start + 4], [0, 1], {
+    extrapolateLeft: "clamp", extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
+  });
+
+  // 文字：✗ 落定後滑上來
+  const textStart = start + 9;
+  const textOpacity = interpolate(frame, [textStart, textStart + 8], [0, 1], {
+    extrapolateLeft: "clamp", extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
+  });
+  const textTy = Math.round(interpolate(frame, [textStart, textStart + 8], [12, 0], {
+    extrapolateLeft: "clamp", extrapolateRight: "clamp",
+    easing: Easing.out(Easing.back(1.4)),
+  }));
+
+  // 背景閃光
+  const flashOpacity = interpolate(
+    frame,
+    [start, start + 4, start + 14],
+    [0, 0.14, 0],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+  );
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flexShrink: 0, position: "relative" }}>
+      {/* 背景紅色閃光 */}
+      <div style={{
+        position: "absolute", inset: -20, borderRadius: 20,
+        background: "#EF4444", opacity: flashOpacity, pointerEvents: "none",
+      }} />
+      {/* 衝擊波擴散圈 */}
+      <div style={{
+        position: "absolute",
+        width: 80, height: 80, borderRadius: "50%",
+        border: "5px solid #EF4444",
+        opacity: ringOpacity,
+        transform: `scale(${ringScale})`,
+        top: "calc(50% - 50px)", left: "calc(50% - 40px)",
+        pointerEvents: "none",
+      }} />
+      {/* ✗ 主體 */}
+      <div style={{
+        fontSize: 68, lineHeight: 1, color: "#EF4444", fontWeight: 900,
+        opacity: xOpacity, transform: `scale(${xScale})`,
+        position: "relative", zIndex: 1,
+      }}>
+        ✗
+      </div>
+      {/* 文字 */}
+      <div style={{
+        fontSize: 22, fontWeight: 700, color: "#EF4444", whiteSpace: "nowrap",
+        opacity: textOpacity, transform: `translateY(${textTy}px)`,
+        position: "relative", zIndex: 1,
+      }}>
+        {resultText}
+      </div>
+    </div>
+  );
+};
+
 // 語音泡打字元件：泡泡淡入後文字逐字打出
 const SPEECH_RATE = 0.85; // chars/frame — 中文打字手感
 const SpeechBubble: React.FC<{ message: string; bubbleStart: number; frame: number }> = ({
@@ -114,10 +194,7 @@ export const ChatDiagramBlock: React.FC<Props> = ({ block, revealFrame = 0 }) =>
 
         <ArrowSVG color="#FCA5A5" frame={frame} start={t(30)} />
 
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flexShrink: 0, ...useAppear(frame, t(34), 1.5) }}>
-          <div style={{ fontSize: 56, lineHeight: 1, color: "#EF4444" }}>✗</div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: "#EF4444", whiteSpace: "nowrap" }}>{block.resultText}</div>
-        </div>
+        <ImpactResult resultText={block.resultText} start={t(34)} frame={frame} />
       </div>
     );
   }
