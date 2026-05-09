@@ -1,46 +1,16 @@
 import React from "react";
+import { Img, staticFile } from "remotion";
 import { ChatDiagramBlock as ChatDiagramBlockType } from "../types";
 import { BLACK, FONT_FAMILY } from "../../constants";
 
 type Props = { block: ChatDiagramBlockType };
 
-// Anthropic-style Claude Code logo:
-// 5 rounded bars arranged in a fan pattern on orange circle
-const ClaudeCodeLogo: React.FC<{ size: number }> = ({ size }) => {
-  const r = size / 2;
-  const barAngles = [-28, -14, 0, 14, 28];
-  const barFractions = [0.44, 0.58, 0.66, 0.58, 0.44];
-  const barW = size * 0.09;
-  return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ flexShrink: 0 }}>
-      <defs>
-        <radialGradient id="cgr" cx="40%" cy="35%" r="65%">
-          <stop offset="0%" stopColor="#F59E0B" />
-          <stop offset="100%" stopColor="#B45309" />
-        </radialGradient>
-      </defs>
-      <circle cx={r} cy={r} r={r} fill="url(#cgr)" />
-      <g transform={`translate(${r} ${r})`}>
-        {barAngles.map((angle, i) => {
-          const h = barFractions[i] * size;
-          return (
-            <rect
-              key={i}
-              x={-barW / 2}
-              y={-h / 2}
-              width={barW}
-              height={h}
-              rx={barW / 2}
-              fill="white"
-              opacity={0.95}
-              transform={`rotate(${angle})`}
-            />
-          );
-        })}
-      </g>
-    </svg>
-  );
-};
+const ClaudeCodeLogo: React.FC<{ size: number }> = ({ size }) => (
+  <Img
+    src={staticFile("images/claude-code-logo.png")}
+    style={{ width: size, height: size, borderRadius: size * 0.22, flexShrink: 0 }}
+  />
+);
 
 const PersonSVG: React.FC<{ size: number }> = ({ size }) => (
   <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
