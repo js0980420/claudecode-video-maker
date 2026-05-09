@@ -2,9 +2,12 @@ import React from "react";
 import {
   AbsoluteFill,
   Audio,
+  Easing,
   Img,
   Sequence,
+  interpolate,
   staticFile,
+  useCurrentFrame,
   useVideoConfig,
 } from "remotion";
 import { Block, TutorialStep, Watermark } from "./types";
@@ -154,8 +157,21 @@ const PageContent: React.FC<{
   accentColor: string;
   watermark?: Watermark;
 }> = ({ title, blocks, accentColor, watermark }) => {
+  const frame = useCurrentFrame();
   const { width, height } = useVideoConfig();
   const isReel = height > width;
+
+  // interpolate 取代 spring：spring 永遠輕微振盪觸發 repaint；
+  // interpolate 在 HEAD_DELAY_FRAMES 後輸出 exactly 1.0，不再觸發重繪。
+  const titleProgress = interpolate(frame, [0, HEAD_DELAY_FRAMES], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
+  });
+
+  const blockTimings = blocks.map((_, i) => ({
+    from: HEAD_DELAY_FRAMES + START_OFFSET_FRAMES + i * STAGGER_FRAMES,
+  }));
 
   return (
     <div
@@ -181,6 +197,8 @@ const PageContent: React.FC<{
         style={{
           fontSize: 56,
           fontWeight: 900,
+          opacity: titleProgress,
+          transform: `translateY(${Math.round((1 - titleProgress) * -20)}px)`,
           textAlign: "left",
           lineHeight: 1.2,
           width: "100%",
@@ -191,12 +209,25 @@ const PageContent: React.FC<{
       </div>
 
       {blocks.map((block, i) => {
+        const { from } = blockTimings[i];
+        const opacity = interpolate(frame, [from, from + FADE_IN_FRAMES], [0, 1], {
+          extrapolateLeft: "clamp",
+          extrapolateRight: "clamp",
+          easing: Easing.out(Easing.back(1.2)),
+        });
+        const translateY = Math.round(interpolate(frame, [from, from + FADE_IN_FRAMES], [24, 0], {
+          extrapolateLeft: "clamp",
+          extrapolateRight: "clamp",
+          easing: Easing.out(Easing.back(1.2)),
+        }));
         const isParagraph = block.type === "paragraph";
         const indentParagraph = isParagraph && isReel;
         return (
           <div
             key={i}
             style={{
+              opacity,
+              transform: `translateY(${translateY}px)`,
               width: "100%",
               display: "flex",
               justifyContent: indentParagraph ? "flex-start" : "center",
