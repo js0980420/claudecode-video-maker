@@ -15,6 +15,9 @@ import { Paragraph } from "./blocks/Paragraph";
 import { ImageBlock } from "./blocks/ImageBlock";
 import { CodeBlock } from "./blocks/CodeBlock";
 import { CalloutBlock } from "./blocks/CalloutBlock";
+import { ComparisonTableBlock } from "./blocks/ComparisonTableBlock";
+import { FeatureCardsBlock } from "./blocks/FeatureCardsBlock";
+import { SkillGridBlock } from "./blocks/SkillGridBlock";
 import { BLACK, FONT_FAMILY, WHITE } from "../constants";
 
 type Props = {
@@ -251,7 +254,10 @@ const BlockRenderer: React.FC<{ block: Block; accentColor: string }> = ({
     case "paragraph": return <Paragraph block={block} accentColor={accentColor} />;
     case "image":     return <ImageBlock block={block} />;
     case "code":      return <CodeBlock block={block} accentColor={accentColor} />;
-    case "callout":   return <CalloutBlock block={block} accentColor={accentColor} />;
-    case "pageBreak": return null; // 不該走到這裡(splitIntoPages 已過濾)
+    case "callout":          return <CalloutBlock block={block} accentColor={accentColor} />;
+    case "comparisonTable":  return <ComparisonTableBlock block={block} accentColor={accentColor} />;
+    case "featureCards":     return <FeatureCardsBlock block={block} accentColor={accentColor} />;
+    case "skillGrid":        return <SkillGridBlock block={block} accentColor={accentColor} />;
+    case "pageBreak":        return null; // 不該走到這裡(splitIntoPages 已過濾)
   }
 };

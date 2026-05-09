@@ -1,4 +1,4 @@
-import { TutorialData, TutorialStep, Block } from "./types";
+import { TutorialData, TutorialStep, Block, ComparisonRow, FeatureCard, SkillCategory } from "./types";
 
 function parseBlock(raw: unknown, ctx: string): Block {
   if (!raw || typeof raw !== "object") {
@@ -50,6 +50,56 @@ function parseBlock(raw: unknown, ctx: string): Block {
   }
   if (t === "pageBreak") {
     return { type: "pageBreak" };
+  }
+  if (t === "comparisonTable") {
+    if (!Array.isArray(b.rows) || b.rows.length === 0) {
+      throw new Error(`${ctx}: comparisonTable.rows must be non-empty array`);
+    }
+    const rows: ComparisonRow[] = (b.rows as unknown[]).map((r, ri) => {
+      const row = r as Record<string, unknown>;
+      for (const k of ["label", "before", "after"] as const) {
+        if (typeof row[k] !== "string") {
+          throw new Error(`${ctx}: comparisonTable.rows[${ri}].${k} must be string`);
+        }
+      }
+      return { label: row.label as string, before: row.before as string, after: row.after as string };
+    });
+    return { type: "comparisonTable", rows };
+  }
+  if (t === "featureCards") {
+    if (!Array.isArray(b.cards) || b.cards.length === 0) {
+      throw new Error(`${ctx}: featureCards.cards must be non-empty array`);
+    }
+    const cards: FeatureCard[] = (b.cards as unknown[]).map((c, ci) => {
+      const card = c as Record<string, unknown>;
+      for (const k of ["icon", "title"] as const) {
+        if (typeof card[k] !== "string") {
+          throw new Error(`${ctx}: featureCards.cards[${ci}].${k} must be string`);
+        }
+      }
+      return {
+        icon: card.icon as string,
+        title: card.title as string,
+        ...(typeof card.desc === "string" ? { desc: card.desc } : {}),
+      };
+    });
+    return { type: "featureCards", cards };
+  }
+  if (t === "skillGrid") {
+    if (!Array.isArray(b.categories) || b.categories.length === 0) {
+      throw new Error(`${ctx}: skillGrid.categories must be non-empty array`);
+    }
+    const categories: SkillCategory[] = (b.categories as unknown[]).map((cat, ci) => {
+      const c = cat as Record<string, unknown>;
+      if (typeof c.name !== "string") {
+        throw new Error(`${ctx}: skillGrid.categories[${ci}].name must be string`);
+      }
+      if (!Array.isArray(c.skills)) {
+        throw new Error(`${ctx}: skillGrid.categories[${ci}].skills must be array`);
+      }
+      return { name: c.name as string, skills: (c.skills as unknown[]).map(String) };
+    });
+    return { type: "skillGrid", categories };
   }
   throw new Error(`${ctx}: unknown block type: ${String(t)}`);
 }

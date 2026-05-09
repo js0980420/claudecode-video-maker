@@ -18,12 +18,24 @@ export type CalloutBlock = {
 };
 export type PageBreakBlock = { type: "pageBreak" };
 
+export type ComparisonRow = { label: string; before: string; after: string };
+export type ComparisonTableBlock = { type: "comparisonTable"; rows: ComparisonRow[] };
+
+export type FeatureCard = { icon: string; title: string; desc?: string };
+export type FeatureCardsBlock = { type: "featureCards"; cards: FeatureCard[] };
+
+export type SkillCategory = { name: string; skills: string[] };
+export type SkillGridBlock = { type: "skillGrid"; categories: SkillCategory[] };
+
 export type Block =
   | ParagraphBlock
   | ImageBlock
   | CodeBlock
   | CalloutBlock
-  | PageBreakBlock;
+  | PageBreakBlock
+  | ComparisonTableBlock
+  | FeatureCardsBlock
+  | SkillGridBlock;
 
 export type TutorialStep = {
   id: string;
