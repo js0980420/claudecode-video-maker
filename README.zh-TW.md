@@ -1,8 +1,8 @@
-# Claude Videos
+# Code to Video with Remotion
 
 > 英文版請看 [README.md](./README.md)。
 
-一個可以完全用 **Claude Code** 對話驅動的 [Remotion](https://www.remotion.dev/) 行銷影片模板。所有文案、場景、AI 配音、背景音樂、縮圖都集中在一個型別化的 config 檔案裡。各模組可獨立開關,場景數量任意。
+一個可以用**任何 AI 編程助手**對話驅動的 [Remotion](https://www.remotion.dev/) 行銷影片模板 — Claude Code、Codex、GitHub Copilot、Cursor、Gemini CLI，只要能改 TypeScript 都可以用。所有文案、場景、AI 配音、背景音樂、縮圖都集中在一個型別化的 config 檔案裡。各模組可獨立開關，場景數量任意。
 
 ---
 
@@ -19,11 +19,11 @@ npm run dev   # 開啟 Remotion Studio(http://localhost:3000)
 
 ---
 
-## 用 Claude Code 客製化 — 生成影片的 Prompt 範例
+## 用 AI 助手客製化 — 生成影片的 Prompt 範例
 
 整支影片只有一個檔案:**`src/content.ts`**(已加入 .gitignore,是你的私人版本)。
 
-你不用改 React 元件,只要用自然語言描述想要的影片,讓 Claude Code 去改寫 `content.ts`。以下是實際有效的 prompt 範例:
+你不用改 React 元件,只要用自然語言描述想要的影片,讓 AI 助手去改寫 `content.ts`。以下是實際有效的 prompt 範例:
 
 **從零開始生成**
 
@@ -81,7 +81,7 @@ input/
   audio/    # 音訊素材(MP3 / WAV / AAC …)
 ```
 
-跟 Claude Code 對話範例:
+跟 AI 助手對話範例:
 
 > 「把 `input/images/logo.png` 加到第一個場景右上角。」
 >
@@ -202,6 +202,22 @@ public/
 ## 授權
 
 框架程式碼採 MIT 授權。**你的 `content.ts` 是你的** — 預設已經 gitignore。
+
+---
+
+## Agent 支援
+
+各 agent 的規則與踩坑知識已預先整合進 repo：
+
+| Agent | Config 檔案 |
+|-------|------------|
+| Claude Code | `CLAUDE.md` + `.claude/skills/` |
+| Codex | `AGENTS.md` |
+| Gemini CLI | `GEMINI.md` |
+| GitHub Copilot | `.github/copilot-instructions.md` |
+| Cursor | `.cursor/rules/remotion.mdc` |
+
+五個入口檔案都包含相同的 Remotion 踩坑知識（sub-pixel 跳動修法、配音工作流程、雙 mp4 render、發布管線）。詳細 skill 在 `.claude/skills/` 作為唯一 source of truth。
 
 ---
 

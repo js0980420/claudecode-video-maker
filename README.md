@@ -1,8 +1,8 @@
-# Claude Videos
+# Code to Video with Remotion
 
 > For Traditional Chinese, see [README.zh-TW.md](./README.zh-TW.md).
 
-A [Remotion](https://www.remotion.dev/) marketing-video template designed to be driven entirely by **Claude Code** — every piece of content (script, scenes, voiceover, BGM, thumbnails) lives in a single typed config file. Decoupled modules, any number of scenes.
+A [Remotion](https://www.remotion.dev/) marketing-video template built to be driven by any AI coding agent — Claude Code, Codex, GitHub Copilot, Cursor, Gemini CLI, or any tool that can edit TypeScript. Every piece of content (script, scenes, voiceover, BGM, thumbnails) lives in a single typed config file. Decoupled modules, any number of scenes.
 
 ---
 
@@ -19,11 +19,11 @@ That's it — the demo video plays out of the box (5 scenes, no audio).
 
 ---
 
-## Customize with Claude Code — example prompts for generating a video
+## Customize with any AI agent — example prompts for generating a video
 
 The whole video is one file: **`src/content.ts`** (gitignored, your private copy).
 
-You don't edit React components — you describe the video in plain English and Claude Code rewrites `content.ts` for you. Here are prompts that actually work:
+You don't edit React components — you describe the video in plain language and your agent rewrites `content.ts` for you. Here are prompts that actually work:
 
 **Start from scratch**
 
@@ -81,7 +81,7 @@ input/
   audio/    # MP3 / WAV / AAC …
 ```
 
-Example chats with Claude Code:
+Example chats with your agent:
 
 > "Put `input/images/logo.png` in the top-right corner of scene 1."
 >
@@ -202,6 +202,22 @@ public/
 ## License
 
 MIT for the framework code. **Your `content.ts` is yours** — gitignored by default.
+
+---
+
+## Agent support
+
+Rules and pitfalls for each agent are pre-bundled in this repo:
+
+| Agent | Config file |
+|-------|------------|
+| Claude Code | `CLAUDE.md` + `.claude/skills/` |
+| Codex | `AGENTS.md` |
+| Gemini CLI | `GEMINI.md` |
+| GitHub Copilot | `.github/copilot-instructions.md` |
+| Cursor | `.cursor/rules/remotion.mdc` |
+
+All five files contain the same hard-won Remotion rules (sub-pixel jitter fixes, voiceover workflow, dual-render setup, publish pipeline). Detailed skill files live in `.claude/skills/` and serve as the single source of truth.
 
 ---
 
