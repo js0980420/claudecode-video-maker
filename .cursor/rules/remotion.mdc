@@ -1,0 +1,136 @@
+---
+description: Claude Videos Remotion 影片專案規則 — 改任何 src/tutorial、src/scenes、steps.json、voiceover、render script 時自動套用
+globs: ["src/**/*.tsx", "src/**/*.ts", "public/screenshots/**/*.json", "scripts/**/*.mjs", "scripts/**/*.ts"]
+alwaysApply: true
+---
+
+# Claude Videos — Cursor Rules
+
+> 詳細 skill 在 `.claude/skills/` 目錄，讀對應 SKILL.md 取得完整說明。
+
+## 專案架構
+
+- **main branch**：共用基礎元件
+- **每支影片**：`video/<name>` branch + `.worktrees/<name>/` 工作目錄
+- **不要在 main worktree 改 content.ts / steps.json / voiceover / screenshots**
+- `video/*` branch **只保本地**，不推 origin
+
+## Remotion 9:16 渲染規則
+
+### Sub-pixel 文字跳動（必讀）
+
+`PageContent` 最外層 div 必須有：
+```tsx
+transform: "translateZ(0)",  // 防止 9:16 center 造成 0.5px sub-pixel 跳動
+```
+
+動畫一律 `translateY + Math.round()`，不用 `scale`：
+```tsx
+// ❌ 會造成鄰近元素跳動
+transform: `scale(${scale})`
+
+// ✅
+const ty = Math.round(interpolate(frame, [start, end], [20, 0], { easing }));
+transform: `translateY(${ty}px)`
+```
+
+### 9:16 垂直置中
+
+```tsx
+const { height, width } = useVideoConfig();
+const isReel = height > width;
+
+// PageContent 外層 div
+justifyContent: isReel ? "center" : "flex-start"
+```
+
+### 列點對齊
+
+```tsx
+// blocks.map wrapper
+const isParagraph = block.type === "paragraph";
+const indentParagraph = isParagraph && isReel;
+<div style={{
+  width: "100%",
+  display: "flex",
+  justifyContent: indentParagraph ? "flex-start" : "center",
+  paddingLeft: indentParagraph ? 60 : 0,
+  boxSizing: "border-box",
+}}>
+
+// Paragraph.tsx — width: 100% 是關鍵
+<div style={{ textAlign: "left", width: "100%", maxWidth: 1400 }}>
+```
+
+## 字幕規則
+
+```tsx
+// SubtitleOverlay.tsx — splitIntoSentences 切句邏輯
+// 觸發字元：，。？！；、
+// 移除行尾：，。
+// 保留行尾：？！：...、
+// MIN_DUR = 1.2s
+```
+
+兩處**必須同步修改**：
+1. `src/tutorial/SubtitleOverlay.tsx` — `splitIntoSentences()`
+2. `scripts/generate-subtitles.mjs` — `splitSentences()`
+
+字幕是 **`<SubtitleOverlay>` React 元件**（不是 ffmpeg burn-in）。
+
+## Tutorial 配音工作流程
+
+**強制順序（不可跳步）：**
+
+1. 鎖定所有 blocks
+2. 寫 `voiceovers[]`
+3. `npx tsx scripts/generate-tutorial-voiceover.ts <name>` 產 wav
+4. **第一輪預覽**（字幕關閉）
+5. 配音調整迴圈
+6. 配音定稿 → 開 `<SubtitleOverlay>`
+7. **第二輪預覽**（帶字幕）
+8. **使用者說「render / 出片」才跑 `npm run render:tutorial`**
+
+## ElevenLabs
+
+- 模型：`eleven_v3`
+- 語速：`ELEVENLABS_SPEED=0.85`
+
+發音地雷詞：
+
+| 原文 | 替換成 |
+|------|--------|
+| `SQL` | `SEQUEL` |
+| `確認` | `確定` |
+| `Zeabur` | `Zee-bur` |
+| `GB`（容量） | `G B` |
+| `.dev`（域名） | `點 D E V` |
+
+## PageBreak 規則
+
+`pages.length` **必須 === `voiceovers.length`**。
+
+## Render
+
+Parallel 出兩支 mp4：
+
+```bash
+npx concurrently \
+  "npx remotion render <name> output/<name>.mp4 --concurrency 4" \
+  "npx remotion render <name>-Reel output/<name>-reel.mp4 --concurrency 4"
+```
+
+## 發布
+
+- 順序：YT → IG → Threads；全 public
+- YT description：禁 `<>`，用 `〈〉`；必含章節（0:00 起，≥ 10s 間距）
+- IG：最多 5 hashtag
+- Threads：主貼文 + 第一則留言零外連結；連結 reply ≥ 3 小時後
+
+## Skill 參考
+
+`.claude/skills/` 下各 `SKILL.md`：
+- `tutorial-reel-rendering` — 9:16 渲染品質細節
+- `tutorial-voiceover-style` — 配音規範完整版
+- `tutorial-publish-pipeline` — render + 發布流程
+- `youtube-publishing-rules` / `instagram-publishing-rules` / `threads-publishing-rules`
